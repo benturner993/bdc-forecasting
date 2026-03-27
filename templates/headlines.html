@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+{% block title %}Headlines{% endblock %}
+{% block page_title %}National Headlines{% endblock %}
+
+{% block content %}
+
+<!-- Page heading -->
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Headline Performance Overview</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
+  This page summarises booking and revenue delivery across the entire network of 380 practices.
+  Day {{ current_day }} of 31 has elapsed this month — use the cards and charts below to assess
+  current performance against AOP targets and understand the distribution of practice outcomes.
+</p>
+
+<!-- KPI tiles -->
+<div class="row g-3 mb-4">
+
+  <!-- 1. Bookings This Month -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="home-kpi-card kpi-hoverable" tabindex="0">
+      <div class="home-kpi-icon" style="background:#e8f1fb">
+        <i class="fas fa-calendar-check text-primary"></i>
+      </div>
+      <div class="home-kpi-label">Bookings This Month</div>
+      <div class="home-kpi-value" style="color:#0d1846;">{{ "{:,}".format(gs.total_bookings_this_month) }}</div>
+      <div class="home-kpi-sub">vs {{ "{:,}".format(gs.total_expected_bookings) }} expected by day {{ current_day }}</div>
+      <div class="mt-2">
+        <span class="badge rounded-pill {{ 'bg-success' if gs.overall_booking_rate >= 0.90 else ('bg-danger' if gs.overall_booking_rate < 0.75 else 'bg-warning text-dark') }}">
+          {{ (gs.overall_booking_rate * 100)|round(1) }}% of expected
+        </span>
+      </div>
+      <div class="kpi-hover-desc">
+        Total appointments booked across all 380 practices so far in March, compared with the
+        number we would expect to have booked by day {{ current_day }} based on each practice's
+        historical booking curve. A rate above 90% is on track; below 75% signals a demand concern.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Forecast Revenue (Mar) -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="home-kpi-card kpi-hoverable" tabindex="0">
+      <div class="home-kpi-icon" style="background:#e8f5e9">
+        <i class="fas fa-sterling-sign text-success"></i>
+      </div>
+      <div class="home-kpi-label">Forecast Revenue (Mar)</div>
+      <div class="home-kpi-value" style="color:#0d1846;">{{ gs.total_forecast_revenue | currency }}</div>
+      <div class="home-kpi-sub">AOP: {{ gs.total_aop_monthly_revenue | currency }}</div>
+      <div class="mt-2">
+        <span class="badge rounded-pill {{ 'bg-success' if gs.overall_revenue_delivery >= 0.95 else ('bg-danger' if gs.overall_revenue_delivery < 0.85 else 'bg-warning text-dark') }}">
+          {{ (gs.overall_revenue_delivery * 100)|round(1) }}% of AOP
+        </span>
+      </div>
+      <div class="kpi-hover-desc">
+        Projected total revenue for March across all practices, extrapolated from current
+        bookings and the NHS/Private mix. Compared against the monthly AOP (Annual Operating Plan)
+        target. Shortfalls here may reflect a mix issue even where booking volumes look healthy.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. YTD Revenue Delivery -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="home-kpi-card kpi-hoverable" tabindex="0">
+      <div class="home-kpi-icon" style="background:#fff3cd">
+        <i class="fas fa-chart-line" style="color:#e6a800"></i>
+      </div>
+      <div class="home-kpi-label">YTD Revenue Delivery</div>
+      <div class="home-kpi-value" style="color:#0d1846;">{{ gs.total_ytd_revenue | currency }}</div>
+      <div class="home-kpi-sub">AOP YTD: {{ gs.total_ytd_aop | currency }}</div>
+      <div class="mt-2">
+        <span class="badge rounded-pill {{ 'bg-success' if gs.overall_ytd_delivery >= 0.97 else ('bg-danger' if gs.overall_ytd_delivery < 0.90 else 'bg-warning text-dark') }}">
+          {{ (gs.overall_ytd_delivery * 100)|round(1) }}% of YTD AOP
+        </span>
+      </div>
+      <div class="kpi-hover-desc">
+        Cumulative revenue delivered since the start of the financial year (April 2025)
+        compared with the cumulative AOP target to date. This is the primary measure of
+        full-year performance — a delivery rate below 97% requires investigation and action.
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Practice Status (doughnut) -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="home-kpi-card kpi-hoverable" tabindex="0">
+      <div class="home-kpi-icon" style="background:#f3e8fd">
+        <i class="fas fa-hospital" style="color:#7b1fa2"></i>
+      </div>
+      <div class="home-kpi-label">Practice Status</div>
+      <div class="home-kpi-sub">380 practices — {{ today }}</div>
+      <div class="d-flex align-items-center gap-3 mt-2">
+        <div style="position:relative; width:80px; height:80px; flex-shrink:0;">
+          <canvas id="statusDonut"></canvas>
+        </div>
+        <div style="font-size:.82rem; line-height:1.9;">
+          <div><span class="tl-dot green me-1"></span>On Track&nbsp;
+            <strong class="text-success">{{ gs.green_count }}</strong>
+            <span class="text-muted ms-1">({{ ((gs.green_count/380)*100)|round(0)|int }}%)</span>
+          </div>
+          <div><span class="tl-dot amber me-1"></span>At Risk&nbsp;
+            <strong style="color:#e6a800">{{ gs.amber_count }}</strong>
+            <span class="text-muted ms-1">({{ ((gs.amber_count/380)*100)|round(0)|int }}%)</span>
+          </div>
+          <div><span class="tl-dot red me-1"></span>Off Track&nbsp;
+            <strong class="text-danger">{{ gs.red_count }}</strong>
+            <span class="text-muted ms-1">({{ ((gs.red_count/380)*100)|round(0)|int }}%)</span>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-hover-desc">
+        Traffic light breakdown of all 380 practices based on YTD revenue delivery.
+        Green = top 25% of performers. Red = bottom 25%. Amber = middle 50%.
+        Use the Performers tab to drill into individual practices, or Take Action to see
+        recommended interventions for off-track and at-risk practices.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Charts row (traffic light chart removed — same data as Practice Performance Split KPI above) -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-chart-bar me-1"></i> YTD Revenue Delivery by Area
+        <span class="text-muted small ms-2">Dashed = 100% AOP</span>
+      </div>
+      <div class="card-body p-2">
+        <div style="position:relative; height:320px; overflow:hidden;">
+          <canvas id="areaBarChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-chart-column me-1"></i> Booking Rate Distribution
+        <span class="text-muted small ms-2">All 380 practices</span>
+      </div>
+      <div class="card-body p-2">
+        <div style="position:relative; height:240px; overflow:hidden;">
+          <canvas id="brDistChart"></canvas>
+        </div>
+        <div class="mt-2 small text-muted">
+          Booking rate = actual bookings ÷ expected bookings at day {{ current_day }} of month,
+          based on each practice's historical booking curve.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue gap analysis by area -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <span><i class="fas fa-table me-1"></i> Area Revenue Gap — Ranked by YTD Delivery</span>
+    <div class="d-flex align-items-center gap-2">
+      <!-- Row count filter -->
+      <div class="btn-group btn-group-sm" id="areaRowFilter" role="group" aria-label="Show rows">
+        <button type="button" class="btn btn-primary"    data-show="5"  onclick="setAreaRows(5)">Top 5</button>
+        <button type="button" class="btn btn-outline-primary" data-show="10" onclick="setAreaRows(10)">Top 10</button>
+        <button type="button" class="btn btn-outline-primary" data-show="25" onclick="setAreaRows(25)">All 25</button>
+      </div>
+      <a href="{{ url_for('areas_summary') }}" class="btn btn-sm btn-outline-secondary">Full Area View →</a>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Status</th>
+          <th>Area</th>
+          <th class="text-end">YTD Revenue</th>
+          <th class="text-end">YTD AOP</th>
+          <th class="text-end">YTD Gap</th>
+          <th class="text-end">Delivery</th>
+          <th class="text-end">Mar Booking Rate</th>
+          <th class="text-center">Practices</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="areaGapBody">
+        {% for area in areas | sort(attribute='ytd_delivery') %}
+        <tr class="area-gap-row" data-rank="{{ loop.index }}"
+            style="{{ 'display:none' if loop.index > 5 else '' }}">
+          <td><span class="tl-dot {{ area.traffic_light }}"></span></td>
+          <td class="fw-medium small">{{ area.name }}</td>
+          <td class="text-end small">{{ area.ytd_revenue | currency }}</td>
+          <td class="text-end small text-muted">{{ area.ytd_aop_revenue | currency }}</td>
+          <td class="text-end small {{ 'text-success' if area.ytd_revenue >= area.ytd_aop_revenue else 'text-danger' }}">
+            {% set gap = area.ytd_revenue - area.ytd_aop_revenue %}
+            {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+          </td>
+          <td class="text-end">
+            <span class="fw-bold small {{ 'text-success' if area.ytd_delivery >= 0.97 else ('text-danger' if area.ytd_delivery < 0.90 else 'text-warning') }}">
+              {{ (area.ytd_delivery * 100)|round(1) }}%
+            </span>
+          </td>
+          <td class="text-end small">
+            <span class="{{ 'text-success' if area.booking_rate >= 0.90 else ('text-danger' if area.booking_rate < 0.75 else 'text-warning') }}">
+              {{ (area.booking_rate * 100)|round(1) }}%
+            </span>
+          </td>
+          <td class="text-center small">
+            <span class="text-success">{{ area.green_count }}</span> /
+            <span class="text-warning">{{ area.amber_count }}</span> /
+            <span class="text-danger">{{ area.red_count }}</span>
+          </td>
+          <td><a href="{{ url_for('area_detail', area_id=area.id) }}" class="btn btn-xs btn-outline-primary">Detail →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* ── Hover description overlay on KPI cards ─────────────────────────── */
+.kpi-hoverable { position: relative; overflow: hidden; cursor: default; }
+.kpi-hover-desc {
+  position: absolute; inset: 0;
+  background: rgba(13, 24, 70, 0.93);
+  color: #fff;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  padding: 16px;
+  border-radius: 10px;
+  display: flex; align-items: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+}
+.kpi-hoverable:hover .kpi-hover-desc,
+.kpi-hoverable:focus .kpi-hover-desc {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.home-kpi-card {
+  background: #fff; border-radius: 10px; border: 1px solid #e9ecef;
+  padding: 20px 18px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); height: 100%;
+}
+.home-kpi-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px; font-size: 1.05rem;
+}
+.home-kpi-label {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: #6c757d; margin-bottom: 4px;
+}
+.home-kpi-value { font-size: 1.65rem; font-weight: 700; line-height: 1.15; }
+.home-kpi-sub   { font-size: 0.78rem; color: #6c757d; margin-top: 2px; }
+</style>
+
+<script>
+// Practice status doughnut
+const donutCtx = document.getElementById('statusDonut').getContext('2d');
+new Chart(donutCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['On Track', 'At Risk', 'Off Track'],
+    datasets: [{
+      data: [{{ gs.green_count }}, {{ gs.amber_count }}, {{ gs.red_count }}],
+      backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+      borderWidth: 2, borderColor: '#fff', hoverOffset: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '70%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} (${((ctx.raw/380)*100).toFixed(0)}%)` }}
+    }
+  }
+});
+</script>
+
+<script>
+// ── Area row show/hide filter ─────────────────────────────────────────────
+let currentAreaRows = 5;
+function setAreaRows(n) {
+  currentAreaRows = n;
+  document.querySelectorAll('.area-gap-row').forEach(row => {
+    row.style.display = parseInt(row.dataset.rank) <= n ? '' : 'none';
+  });
+  // Update active button state
+  document.querySelectorAll('#areaRowFilter button').forEach(btn => {
+    const active = parseInt(btn.dataset.show) === n;
+    btn.className = active ? 'btn btn-primary btn-sm' : 'btn btn-outline-primary btn-sm';
+  });
+}
+
+const areaLabels    = {{ area_labels | safe }};
+const areaYtd       = {{ area_ytd | safe }};
+const areaTlColors  = {{ area_tl_colors | safe }};
+const areaCtx = document.getElementById('areaBarChart').getContext('2d');
+new Chart(areaCtx, {
+  type: 'bar',
+  data: {
+    labels: areaLabels,
+    datasets: [{ label: 'YTD Revenue Delivery (%)', data: areaYtd,
+      backgroundColor: '#0d1846', borderRadius: 3 }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% of AOP` }}
+    },
+    scales: {
+      x: { min: 75, max: 115, ticks: { callback: v => v + '%' }, grid: { color: 'rgba(0,0,0,0.04)' } },
+      y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+    }
+  }
+});
+
+const brLabels  = {{ br_labels | safe }};
+const brBuckets = {{ br_buckets | safe }};
+const brCtx = document.getElementById('brDistChart').getContext('2d');
+new Chart(brCtx, {
+  type: 'bar',
+  data: {
+    labels: brLabels,
+    datasets: [{
+      label: 'Practices',
+      data: brBuckets,
+      backgroundColor: ['#0079c8','#d02670','#db3907','#1b883c','#007d79'],
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} practices` }}
+    },
+    scales: {
+      y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 } } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endblock %}

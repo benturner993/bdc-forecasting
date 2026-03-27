@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block title %}Outlook{% endblock %}
+{% block page_title %}3-Month Forward Looking Analysis{% endblock %}
+
+{# ── Traffic-light icon macro ── #}
+{% macro _tl_icon(rate, high, low) -%}
+  {%- if rate >= high -%}<i class="fas fa-check-circle text-success"></i>
+  {%- elif rate < low -%}<i class="fas fa-times-circle text-danger"></i>
+  {%- else -%}<i class="fas fa-exclamation-circle text-warning"></i>
+  {%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+
+<div class="page-desc">
+  <strong>Area-level booking and revenue outlook for the next 3 months.</strong>
+  The <strong>March</strong> column shows actual current-month performance (booking rate and
+  practice traffic-light split). The <strong>April, May and June</strong> columns show
+  forecast performance based on each practice's historical booking curve, NHS/Private mix
+  and price uplifts. Use the <strong>Region</strong> and <strong>Month</strong> filters to
+  focus on what matters — with both active the table reduces to a handful of rows and columns.
+  Click any area name to drill into its full detail page.
+</div>
+
+{# Month keys: 0=cur (Mar), 1=apr, 2=may, 3=jun #}
+{% set mkeys   = ['cur', 'apr', 'may', 'jun'] %}
+{% set mlabels = ['Mar 26', fwd_labels[0], fwd_labels[1], fwd_labels[2]] %}
+
+<!-- ── Filter controls ───────────────────────────────────────────────────── -->
+<div class="card mb-3">
+  <div class="card-body py-2 d-flex flex-wrap gap-4 align-items-center">
+
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="text-muted small fw-bold text-nowrap">
+        <i class="fas fa-map-marker-alt me-1"></i>Region:
+      </span>
+      <div class="btn-group btn-group-sm flex-wrap" id="regionFilter">
+        <button class="btn btn-primary" data-region="all"
+                onclick="filterRegion('all')">All</button>
+        {% for rname in regions | sort %}
+        <button class="btn btn-outline-primary" data-region="{{ rname }}"
+                onclick="filterRegion('{{ rname }}')">{{ rname }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small fw-bold text-nowrap">
+        <i class="fas fa-calendar-alt me-1"></i>Months:
+      </span>
+      <div class="btn-group btn-group-sm" id="monthFilter">
+        <button class="btn btn-primary" data-mtoggle="cur"
+                onclick="toggleMonth('cur')">Mar
+          <span class="badge bg-white text-dark ms-1" style="font-size:.6rem">Actual</span>
+        </button>
+        <button class="btn btn-primary" data-mtoggle="apr"
+                onclick="toggleMonth('apr')">{{ fwd_labels[0] }}</button>
+        <button class="btn btn-outline-primary" data-mtoggle="may"
+                onclick="toggleMonth('may')">{{ fwd_labels[1] }}</button>
+        <button class="btn btn-outline-primary" data-mtoggle="jun"
+                onclick="toggleMonth('jun')">{{ fwd_labels[2] }}</button>
+      </div>
+    </div>
+
+    <span class="ms-auto text-muted small d-none d-lg-block">
+      <i class="fas fa-info-circle me-1"></i>
+      Actual for March · Forecast for Apr–Jun · Click any area to drill in
+    </span>
+  </div>
+</div>
+
+<!-- ── Analysis table ────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table id="fwdTable"
+             class="table table-sm align-middle mb-0 fwd-table hide-may hide-jun">
+        <thead>
+          <!-- Row 1: month group headers -->
+          <tr>
+            <th rowspan="2" class="fwd-th-area">Area</th>
+            <th rowspan="2" class="fwd-th-vol text-center">Vol</th>
+            {% for mi in range(4) %}
+            <th colspan="5"
+                class="col-{{ mkeys[mi] }} col-grp-hdr fwd-month-hdr {{ 'fwd-cur' if mi == 0 else 'fwd-fcast' }}">
+              {{ mlabels[mi] }}
+              {% if mi == 0 %}
+                <span class="badge bg-white text-dark ms-1 fw-normal" style="font-size:.6rem">Actual</span>
+              {% else %}
+                <span class="badge bg-white text-secondary ms-1 fw-normal" style="font-size:.6rem">Forecast</span>
+              {% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+          <!-- Row 2: sub-column headers -->
+          <tr>
+            {% for mi in range(4) %}
+            <th class="col-{{ mkeys[mi] }} col-grp-start fwd-th-sub text-center">Booking<br>Rate</th>
+            <th class="col-{{ mkeys[mi] }} fwd-th-sub fwd-col-red text-center">🔴%</th>
+            <th class="col-{{ mkeys[mi] }} fwd-th-sub fwd-col-amb text-center">🟡%</th>
+            <th class="col-{{ mkeys[mi] }} fwd-th-sub fwd-col-grn text-center">🟢%</th>
+            <th class="col-{{ mkeys[mi] }} fwd-th-sub text-center">Rev<br>Del</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% set ns = namespace(prev_region='') %}
+          {% for area in fwd_areas %}
+
+          {# Region separator + subtotal for the previous region #}
+          {% if area.region != ns.prev_region %}
+            {% if ns.prev_region != '' %}
+            {% set reg = regions[ns.prev_region] %}
+            <tr class="fwd-region-total" data-region="{{ ns.prev_region }}">
+              <td class="fw-bold ps-3 small">Total {{ ns.prev_region }}</td>
+              <td class="text-center fw-bold small">{{ reg.practice_count }}</td>
+              <td class="col-cur col-grp-start text-center">
+                {{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }}
+                <strong>{{ (reg.cur_booking_rate*100)|round(1) }}%</strong>
+              </td>
+              <td class="col-cur fwd-col-red text-center fw-bold small">{{ reg.cur_red_pct }}%</td>
+              <td class="col-cur fwd-col-amb text-center fw-bold small">{{ reg.cur_amber_pct }}%</td>
+              <td class="col-cur fwd-col-grn text-center fw-bold small">{{ reg.cur_green_pct }}%</td>
+              <td class="col-cur text-center">
+                {{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }}
+                <strong>{{ (reg.cur_revenue_delivery*100)|round(1) }}%</strong>
+              </td>
+              {% for fi in range(3) %}{% set fm = reg.fwd[fi] %}{% set mk = mkeys[fi+1] %}
+              <td class="col-{{ mk }} col-grp-start text-center">
+                {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }}
+                <strong>{{ (fm.booking_rate*100)|round(1) }}%</strong>
+              </td>
+              <td class="col-{{ mk }} fwd-col-red text-center fw-bold small">{{ fm.red_pct }}%</td>
+              <td class="col-{{ mk }} fwd-col-amb text-center fw-bold small">{{ fm.amber_pct }}%</td>
+              <td class="col-{{ mk }} fwd-col-grn text-center fw-bold small">{{ fm.green_pct }}%</td>
+              <td class="col-{{ mk }} text-center">
+                {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }}
+                <strong>{{ (fm.revenue_delivery*100)|round(1) }}%</strong>
+              </td>
+              {% endfor %}
+            </tr>
+            {% endif %}
+            <tr class="fwd-region-hdr" data-region="{{ area.region }}">
+              <td colspan="22">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ area.region }}
+              </td>
+            </tr>
+            {% set ns.prev_region = area.region %}
+          {% endif %}
+
+          {# Area data row #}
+          {% set crp = (area.red_count   / area.practice_count * 100)|round(0)|int if area.practice_count else 0 %}
+          {% set cap = (area.amber_count / area.practice_count * 100)|round(0)|int if area.practice_count else 0 %}
+          {% set cgp = (area.green_count / area.practice_count * 100)|round(0)|int if area.practice_count else 0 %}
+          <tr class="fwd-area-row" data-region="{{ area.region }}">
+            <td class="small ps-4">
+              <a href="{{ url_for('area_detail', area_id=area.id) }}"
+                 class="text-decoration-none text-dark fw-medium">{{ area.name }}</a>
+            </td>
+            <td class="text-center small text-muted">{{ area.practice_count }}</td>
+            <td class="col-cur col-grp-start text-center small">
+              {{ _tl_icon(area.booking_rate, 0.90, 0.75) }} {{ (area.booking_rate*100)|round(1) }}%
+            </td>
+            <td class="col-cur fwd-col-red text-center small">{{ crp }}%</td>
+            <td class="col-cur fwd-col-amb text-center small">{{ cap }}%</td>
+            <td class="col-cur fwd-col-grn text-center small">{{ cgp }}%</td>
+            <td class="col-cur text-center small">
+              {{ _tl_icon(area.revenue_delivery, 0.97, 0.90) }} {{ (area.revenue_delivery*100)|round(1) }}%
+            </td>
+            {% for fi in range(3) %}{% set fm = area.forward_months[fi] %}{% set mk = mkeys[fi+1] %}
+            <td class="col-{{ mk }} col-grp-start text-center small">
+              {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }} {{ (fm.booking_rate*100)|round(1) }}%
+            </td>
+            <td class="col-{{ mk }} fwd-col-red text-center small">{{ fm.red_pct }}%</td>
+            <td class="col-{{ mk }} fwd-col-amb text-center small">{{ fm.amber_pct }}%</td>
+            <td class="col-{{ mk }} fwd-col-grn text-center small">{{ fm.green_pct }}%</td>
+            <td class="col-{{ mk }} text-center small">
+              {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }} {{ (fm.revenue_delivery*100)|round(1) }}%
+            </td>
+            {% endfor %}
+          </tr>
+
+          {% endfor %}
+
+          {# Final region subtotal #}
+          {% if ns.prev_region in regions %}{% set reg = regions[ns.prev_region] %}
+          <tr class="fwd-region-total" data-region="{{ ns.prev_region }}">
+            <td class="fw-bold ps-3 small">Total {{ ns.prev_region }}</td>
+            <td class="text-center fw-bold small">{{ reg.practice_count }}</td>
+            <td class="col-cur col-grp-start text-center">
+              {{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }}
+              <strong>{{ (reg.cur_booking_rate*100)|round(1) }}%</strong>
+            </td>
+            <td class="col-cur fwd-col-red text-center fw-bold small">{{ reg.cur_red_pct }}%</td>
+            <td class="col-cur fwd-col-amb text-center fw-bold small">{{ reg.cur_amber_pct }}%</td>
+            <td class="col-cur fwd-col-grn text-center fw-bold small">{{ reg.cur_green_pct }}%</td>
+            <td class="col-cur text-center">
+              {{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }}
+              <strong>{{ (reg.cur_revenue_delivery*100)|round(1) }}%</strong>
+            </td>
+            {% for fi in range(3) %}{% set fm = reg.fwd[fi] %}{% set mk = mkeys[fi+1] %}
+            <td class="col-{{ mk }} col-grp-start text-center">
+              {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }}
+              <strong>{{ (fm.booking_rate*100)|round(1) }}%</strong>
+            </td>
+            <td class="col-{{ mk }} fwd-col-red text-center fw-bold small">{{ fm.red_pct }}%</td>
+            <td class="col-{{ mk }} fwd-col-amb text-center fw-bold small">{{ fm.amber_pct }}%</td>
+            <td class="col-{{ mk }} fwd-col-grn text-center fw-bold small">{{ fm.green_pct }}%</td>
+            <td class="col-{{ mk }} text-center">
+              {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }}
+              <strong>{{ (fm.revenue_delivery*100)|round(1) }}%</strong>
+            </td>
+            {% endfor %}
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+.fwd-table { font-size: .78rem; min-width: 600px; }
+.fwd-month-hdr {
+  text-align: center; font-weight: 700; font-size: .75rem; padding: 6px 4px;
+}
+.fwd-cur   { background: #0d5c5c; color: #fff; }
+.fwd-fcast { background: #1a6b8a; color: #fff; }
+.fwd-th-sub {
+  font-size: .70rem; font-weight: 600; color: #495057;
+  background: #f8f9fa; padding: 4px 5px; white-space: nowrap;
+}
+.fwd-th-area { min-width: 155px; background: #f8f9fa; }
+.fwd-th-vol  { width: 40px;      background: #f8f9fa; }
+.fwd-col-red { background: rgba(220, 53, 69, 0.10); }
+.fwd-col-amb { background: rgba(255,193,  7, 0.12); }
+.fwd-col-grn { background: rgba( 25,135, 84, 0.10); }
+.col-grp-start { border-left: 2px solid #dee2e6 !important; }
+.col-grp-hdr   { border-left: 2px solid rgba(255,255,255,0.3) !important; }
+.fwd-area-row td { padding: 4px 5px; vertical-align: middle; }
+.fwd-area-row:hover { background: rgba(0,0,0,0.025); }
+.fwd-region-hdr td {
+  background: #343a40; color: #fff; font-size: .72rem; font-weight: 700;
+  padding: 5px 10px; letter-spacing: .4px; text-transform: uppercase;
+}
+.fwd-region-total td {
+  background: #e9ecef; border-top: 1.5px solid #adb5bd; padding: 5px 5px;
+}
+/* Column visibility toggles */
+.fwd-table.hide-cur .col-cur { display: none; }
+.fwd-table.hide-apr .col-apr { display: none; }
+.fwd-table.hide-may .col-may { display: none; }
+.fwd-table.hide-jun .col-jun { display: none; }
+</style>
+
+<script>
+function filterRegion(region) {
+  document.querySelectorAll('#regionFilter button').forEach(btn => {
+    btn.className = btn.dataset.region === region
+      ? 'btn btn-primary btn-sm'
+      : 'btn btn-outline-primary btn-sm';
+  });
+  const all = region === 'all';
+  document.querySelectorAll('.fwd-area-row, .fwd-region-hdr, .fwd-region-total')
+    .forEach(row => {
+      row.style.display = (all || row.dataset.region === region) ? '' : 'none';
+    });
+}
+
+const activeMonths = new Set(['cur', 'apr']);
+
+function toggleMonth(key) {
+  if (activeMonths.has(key) && activeMonths.size <= 1) return;
+  const table = document.getElementById('fwdTable');
+  const btn   = document.querySelector(`#monthFilter [data-mtoggle="${key}"]`);
+  if (activeMonths.has(key)) {
+    activeMonths.delete(key);
+    table.classList.add('hide-' + key);
+    btn.className = 'btn btn-outline-primary btn-sm';
+  } else {
+    activeMonths.add(key);
+    table.classList.remove('hide-' + key);
+    btn.className = 'btn btn-primary btn-sm';
+  }
+}
+</script>
+{% endblock %}

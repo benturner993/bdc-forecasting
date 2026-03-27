@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Practices{% endblock %}
+{% block page_title %}Practice Directory{% endblock %}
+
+{% block content %}
+
+<div class="page-desc">
+  <strong>Searchable directory of all 380 Bupa Dental Care practices.</strong>
+  Filter by area, performance status, or booking profile. Use the search box to find a specific
+  practice by name or location. Click any row to open the full practice detail page including
+  booking curve, revenue forecast, capacity whitespace, and the explainability panel.
+  <span class="text-muted">Showing <strong id="visible-count">–</strong> of {{ total_count }} practices.</span>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form method="get" id="filter-form" class="d-flex align-items-center gap-3 flex-wrap">
+      <!-- Live search (client-side) -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-bold small">Search:</label>
+        <input type="text" id="practice-search" placeholder="Practice name or location…"
+               class="form-control form-control-sm" style="width:220px;" autocomplete="off">
+      </div>
+      <!-- Area filter -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-bold small text-nowrap">Area:</label>
+        <select name="area" class="form-select form-select-sm" style="width:190px;" onchange="this.form.submit()">
+          <option value="all" {{ 'selected' if area_filter == 'all' }}>All Areas</option>
+          {% for area in areas %}
+          <option value="{{ area.id }}" {{ 'selected' if area_filter == area.id }}>{{ area.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <!-- Status filter -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-bold small text-nowrap">Status:</label>
+        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="all"   {{ 'selected' if status_filter == 'all' }}>All</option>
+          <option value="green" {{ 'selected' if status_filter == 'green' }}>On Track</option>
+          <option value="amber" {{ 'selected' if status_filter == 'amber' }}>At Risk</option>
+          <option value="red"   {{ 'selected' if status_filter == 'red' }}>Off Track</option>
+        </select>
+      </div>
+      <!-- Booking profile filter -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-bold small text-nowrap">Profile:</label>
+        <select name="profile" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="all"   {{ 'selected' if profile_filter == 'all' }}>All Profiles</option>
+          <option value="early" {{ 'selected' if profile_filter == 'early' }}>Early booking</option>
+          <option value="mixed" {{ 'selected' if profile_filter == 'mixed' }}>Mixed booking</option>
+          <option value="late"  {{ 'selected' if profile_filter == 'late' }}>Late booking</option>
+        </select>
+      </div>
+      <!-- Sort -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <label class="form-label mb-0 fw-bold small text-nowrap">Sort:</label>
+        <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="name"              {{ 'selected' if sort_by == 'name' }}>Name A–Z</option>
+          <option value="ytd_delivery"      {{ 'selected' if sort_by == 'ytd_delivery' }}>YTD Delivery ↑</option>
+          <option value="booking_rate"      {{ 'selected' if sort_by == 'booking_rate' }}>Booking Rate ↑</option>
+          <option value="revenue_delivery"  {{ 'selected' if sort_by == 'revenue_delivery' }}>Rev Delivery ↑</option>
+          <option value="aop_monthly_revenue" {{ 'selected' if sort_by == 'aop_monthly_revenue' }}>AOP Size ↓</option>
+          <option value="nhs_mix"           {{ 'selected' if sort_by == 'nhs_mix' }}>NHS Mix ↑</option>
+        </select>
+        <select name="order" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="asc"  {{ 'selected' if order == 'asc' }}>Ascending</option>
+          <option value="desc" {{ 'selected' if order == 'desc' }}>Descending</option>
+        </select>
+      </div>
+      {% if area_filter != 'all' or status_filter != 'all' or profile_filter != 'all' %}
+      <a href="{{ url_for('practices_list') }}" class="btn btn-xs btn-outline-secondary">
+        <i class="fas fa-times me-1"></i>Clear filters
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Practice table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0" id="practices-table">
+        <thead class="table-dark">
+          <tr>
+            <th>Status</th>
+            <th>Practice</th>
+            <th>Area</th>
+            <th class="text-end">Bookings<br><span class="text-secondary small">Mar actual</span></th>
+            <th class="text-end">Booking Rate</th>
+            <th class="text-end">Forecast Rev<br><span class="text-secondary small">Mar</span></th>
+            <th class="text-end">Rev Gap</th>
+            <th class="text-end">YTD Delivery</th>
+            <th class="text-end">NHS Mix</th>
+            <th class="text-end">Rev / Appt</th>
+            <th class="text-center">Profile</th>
+            <th class="text-center">CI</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in practices %}
+          <tr class="practice-row" data-name="{{ p.name | lower }}">
+            <td><span class="tl-dot {{ p.traffic_light }}"></span></td>
+            <td class="fw-medium small">{{ p.name }}</td>
+            <td>
+              <a href="{{ url_for('area_detail', area_id=p.area_id) }}"
+                 class="text-decoration-none text-muted small">{{ p.area_name }}</a>
+            </td>
+            <td class="text-end small">{{ "{:,}".format(p.current_month_bookings) }}</td>
+            <td class="text-end">
+              <span class="small fw-medium {{ 'text-success' if p.booking_rate >= 0.90 else ('text-danger' if p.booking_rate < 0.75 else 'text-warning') }}">
+                {{ (p.booking_rate*100)|round(1) }}%
+              </span>
+            </td>
+            <td class="text-end small">{{ p.forecast_month_revenue | currency }}</td>
+            <td class="text-end small">
+              <span class="{{ 'text-success' if p.aop_gap_revenue >= 0 else 'text-danger' }}">
+                {{ '+' if p.aop_gap_revenue >= 0 else '' }}{{ p.aop_gap_revenue | currency }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-1">
+                <div class="progress" style="height:5px;min-width:40px">
+                  <div class="progress-bar {{ 'bg-success' if p.ytd_delivery >= 0.97 else ('bg-danger' if p.ytd_delivery < 0.90 else 'bg-warning') }}"
+                       style="width:{{ [p.ytd_delivery*100,100]|min|round(0) }}%"></div>
+                </div>
+                <span class="small">{{ (p.ytd_delivery*100)|round(1) }}%</span>
+              </div>
+            </td>
+            <td class="text-end small">
+              <span class="{{ 'text-warning fw-medium' if p.nhs_mix > 0.70 else 'text-muted' }}">
+                {{ (p.nhs_mix*100)|round(0)|int }}%
+              </span>
+            </td>
+            <td class="text-end small fw-medium {{ 'text-success' if p.rev_per_booking > 100 else 'text-warning' }}">
+              {{ p.rev_per_booking | currency }}
+            </td>
+            <td class="text-center">
+              <span class="badge bg-light text-dark border small" style="font-size:10px;">{{ p.booking_profile }}</span>
+            </td>
+            <td class="text-center">
+              {% if p.within_ci %}
+              <i class="fas fa-check-circle text-success small" title="Within 95% CI"></i>
+              {% else %}
+              <i class="fas fa-exclamation-circle text-danger small" title="Outside 95% CI"></i>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('practice_detail', practice_id=p.id) }}"
+                 class="btn btn-xs btn-outline-primary">Detail →</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-footer text-muted small">
+    Showing <span id="visible-count-footer">{{ practices | length }}</span> of {{ total_count }} practices.
+    CI = 95% confidence interval; a red circle indicates the practice is performing outside the expected range.
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const searchInput  = document.getElementById('practice-search');
+const rows         = document.querySelectorAll('.practice-row');
+const visCount     = document.getElementById('visible-count');
+const visCountFoot = document.getElementById('visible-count-footer');
+
+function updateCount() {
+  const n = [...rows].filter(r => r.style.display !== 'none').length;
+  if (visCount)     visCount.textContent     = n;
+  if (visCountFoot) visCountFoot.textContent = n;
+}
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  rows.forEach(r => {
+    r.style.display = (!q || r.dataset.name.includes(q)) ? '' : 'none';
+  });
+  updateCount();
+});
+
+updateCount();
+</script>
+{% endblock %}

@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+{% block title %}Revenue Forecast{% endblock %}
+{% block page_title %}Revenue Forecast{% endblock %}
+
+{% block content %}
+
+<div class="page-desc">
+  {% if level == 'practice' %}
+    <strong>Practice-level forecast — {{ practice.name }}.</strong>
+    Projecting monthly revenue and booking volumes for this practice over the next
+    <strong>{{ horizon }} months</strong> using its historical booking curve, NHS/Private mix
+    ({{ (practice.nhs_mix * 100)|round(0)|int }}% NHS · {{ (practice.private_mix * 100)|round(0)|int }}% Private)
+    and expected price uplifts (NHS +2.5%/yr · Private +5.0%/yr).
+  {% elif level == 'area' %}
+    <strong>Area-level forecast — {{ area.name }}.</strong>
+    Aggregating practice-level projections across all {{ area.practices|length }} practices in this area
+    over the next <strong>{{ horizon }} months</strong>.
+  {% else %}
+    <strong>National forecast — All 25 Areas.</strong>
+    Aggregating projections across all 380 practices over the next <strong>{{ horizon }} months</strong>
+    (FY 2026/27), using historical booking curves, seasonal patterns and expected price uplifts
+    (NHS +2.5%/yr · Private +5.0%/yr).
+  {% endif %}
+  The shaded band represents the <strong>80% confidence interval</strong>. Use the controls below
+  to drill from National → Area → Practice or change the forecast horizon.
+  {% if model_used %}
+    <span class="badge bg-primary ms-2"><i class="fas fa-robot me-1"></i>LightGBM model active</span>
+  {% else %}
+    <span class="badge bg-secondary ms-2"><i class="fas fa-chart-line me-1"></i>Statistical baseline</span>
+  {% endif %}
+</div>
+
+<!-- ── Controls ──────────────────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-body py-2">
+    <form method="get" id="forecastForm" class="d-flex align-items-center gap-3 flex-wrap">
+
+      <!-- Level tabs -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-medium text-nowrap">Level:</label>
+        <div class="btn-group btn-group-sm">
+          <a href="?horizon={{ horizon }}"
+             class="btn {{ 'btn-primary' if level == 'national' else 'btn-outline-primary' }}">
+            <i class="fas fa-globe me-1"></i>National
+          </a>
+          <a href="?horizon={{ horizon }}&area={{ area_id if area_id != 'all' else areas[0].id }}"
+             class="btn {{ 'btn-primary' if level == 'area' else 'btn-outline-primary' }}"
+             id="areaLevelBtn">
+            <i class="fas fa-map-marker-alt me-1"></i>Area
+          </a>
+          <a href="#"
+             class="btn {{ 'btn-primary' if level == 'practice' else 'btn-outline-primary' }}"
+             id="practiceLevelBtn">
+            <i class="fas fa-tooth me-1"></i>Practice
+          </a>
+        </div>
+      </div>
+
+      <!-- Area selector -->
+      <div class="d-flex align-items-center gap-2" id="areaSelector"
+           style="{{ 'display:none!important' if level == 'national' else '' }}">
+        <label class="form-label mb-0 fw-medium text-nowrap">Area:</label>
+        <select id="areaSelect" name="area" class="form-select form-select-sm"
+                style="min-width:200px;" onchange="onAreaChange()">
+          <option value="all">— select area —</option>
+          {% for a in areas %}
+          <option value="{{ a.id }}" {{ 'selected' if area_id == a.id }}>{{ a.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Practice selector (visible only at practice level) -->
+      <div class="d-flex align-items-center gap-2" id="practiceSelector"
+           style="{{ '' if level == 'practice' else 'display:none' }}">
+        <label class="form-label mb-0 fw-medium text-nowrap">Practice:</label>
+        <select id="practiceSelect" name="practice" class="form-select form-select-sm"
+                style="min-width:220px;" onchange="document.getElementById('forecastForm').submit()">
+          <option value="">— select practice —</option>
+          {% for p in [] %}{# populated by JS from practice_list #}{% endfor %}
+        </select>
+      </div>
+
+      <!-- Horizon -->
+      <div class="d-flex align-items-center gap-2">
+        <label class="form-label mb-0 fw-medium text-nowrap">Horizon:</label>
+        <div class="btn-group btn-group-sm">
+          <a href="?area={{ area_id }}&practice={{ practice_id }}&horizon=3"
+             class="btn btn-outline-primary {{ 'active' if horizon == 3 }}">3 mo</a>
+          <a href="?area={{ area_id }}&practice={{ practice_id }}&horizon=6"
+             class="btn btn-outline-primary {{ 'active' if horizon == 6 }}">6 mo</a>
+          <a href="?area={{ area_id }}&practice={{ practice_id }}&horizon=12"
+             class="btn btn-outline-primary {{ 'active' if horizon == 12 }}">12 mo</a>
+        </div>
+      </div>
+
+      <!-- Info chip -->
+      <div class="ms-auto text-muted small d-none d-lg-block">
+        <i class="fas fa-info-circle me-1"></i>
+        NHS +2.5%/yr · Private +5.0%/yr · {{ horizon }}-month horizon
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- ── Practice-level KPI header ─────────────────────────────────────────── -->
+{% if level == 'practice' and practice %}
+<div class="row g-3 mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-tooth text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Booking Profile</div>
+        <div class="kpi-value" style="font-size:1.1rem">{{ practice.booking_profile | capitalize }}</div>
+        <div class="kpi-sub">{{ practice.area_name }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-warning-soft"><i class="fas fa-syringe text-warning"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">NHS / Private Mix</div>
+        <div class="kpi-value" style="font-size:1.1rem">
+          {{ (practice.nhs_mix * 100)|round(0)|int }}% /
+          {{ (practice.private_mix * 100)|round(0)|int }}%
+        </div>
+        <div class="kpi-sub">Blended value {{ practice.blended_value | currency }} / appt</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="kpi-card">
+      <div class="kpi-icon {{ 'bg-success-soft' if practice.traffic_light == 'green' else ('bg-danger-soft' if practice.traffic_light == 'red' else 'bg-warning-soft') }}">
+        <i class="fas fa-circle {{ 'text-success' if practice.traffic_light == 'green' else ('text-danger' if practice.traffic_light == 'red' else 'text-warning') }}"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Performance Status</div>
+        <div class="kpi-value" style="font-size:1.1rem">
+          {{ practice.traffic_light | capitalize }}
+        </div>
+        <div class="kpi-sub">YTD delivery {{ (practice.ytd_delivery * 100)|round(1) }}%</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-percentage text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Capacity Utilisation</div>
+        <div class="kpi-value" style="font-size:1.1rem">
+          {{ ((1 - practice.whitespace) * 100)|round(1) }}%
+        </div>
+        <div class="kpi-sub">Target {{ (practice.target_utilization * 100)|round(0)|int }}%</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ── Cumulative summary cards (practice level) ─────────────────────────── -->
+{% if level == 'practice' and pf_data %}
+<div class="card mb-4">
+  <div class="card-header"><i class="fas fa-layer-group me-1"></i> Cumulative Forecast Summary</div>
+  <div class="card-body">
+    <div class="row g-3">
+      {% for n, label in [(3, '3-Month'), (6, '6-Month'), (12, '12-Month')] %}
+      {% set rev = pf_data.get(n|string + 'm_revenue', 0) %}
+      {% set aop = pf_data.get(n|string + 'm_aop', 0) %}
+      {% set gap = pf_data.get(n|string + 'm_gap', 0) %}
+      {% set del = pf_data.get(n|string + 'm_delivery', 0) %}
+      <div class="col-md-4">
+        <div class="border rounded p-3 text-center h-100">
+          <div class="text-muted small mb-1">{{ label }} Forecast Revenue</div>
+          <div class="fw-bold fs-5">{{ rev | currency }}</div>
+          <div class="text-muted small">AOP: {{ aop | currency }}</div>
+          <div class="mt-2">
+            <span class="badge {{ 'bg-success' if del >= 0.97 else ('bg-danger' if del < 0.90 else 'bg-warning text-dark') }} fs-6">
+              {{ (del * 100)|round(1) }}% of AOP
+            </span>
+          </div>
+          <div class="small mt-1 {{ 'text-success' if gap >= 0 else 'text-danger' }}">
+            {{ '+' if gap >= 0 else '' }}{{ gap | currency }} vs AOP
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ── Top-level KPI cards ───────────────────────────────────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-chart-line text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">{{ horizon }}-Month Forecast Revenue</div>
+        <div class="kpi-value">{{ total_forecast | currency }}</div>
+        <div class="kpi-sub">{{ title }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-warning-soft"><i class="fas fa-bullseye text-warning"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">{{ horizon }}-Month AOP Target</div>
+        <div class="kpi-value">{{ total_aop | currency }}</div>
+        <div class="kpi-sub">Next FY AOP (estimated)</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="kpi-card">
+      {% set delivery = (total_forecast / total_aop) if total_aop > 0 else 0 %}
+      {% set gap = total_forecast - total_aop %}
+      <div class="kpi-icon {{ 'bg-success-soft' if delivery >= 0.97 else ('bg-danger-soft' if delivery < 0.90 else 'bg-warning-soft') }}">
+        <i class="fas {{ 'fa-arrow-up text-success' if gap >= 0 else 'fa-arrow-down text-danger' }}"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Gap vs AOP</div>
+        <div class="kpi-value {{ 'text-success' if gap >= 0 else 'text-danger' }}">
+          {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+        </div>
+        <div class="kpi-sub">
+          <span class="{{ 'text-success' if delivery >= 0.97 else ('text-danger' if delivery < 0.90 else 'text-warning') }} fw-medium">
+            {{ (delivery * 100)|round(1) }}% of AOP
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main forecast chart ───────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-chart-area me-1"></i> Revenue Forecast vs AOP Target — {{ title }}</span>
+    <span class="text-muted small">Shaded band = 80% confidence interval</span>
+  </div>
+  <div class="card-body p-2">
+    <div style="position:relative; height:320px; overflow:hidden;">
+      <canvas id="nationalForecastChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bookings chart + assumptions ─────────────────────────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-calendar-alt me-1"></i> Booking Volume Forecast</div>
+      <div class="card-body p-2">
+        <div style="position:relative; height:220px; overflow:hidden;">
+          <canvas id="bookingsForecastChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-info-circle me-1"></i> Forecast Assumptions</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tbody>
+            <tr><td class="text-muted">Base period</td>
+                <td class="fw-medium">Apr 25 – Mar 26 (avg last 6 months)</td></tr>
+            <tr><td class="text-muted">NHS price uplift</td>
+                <td class="fw-medium text-primary">+2.5% per year</td></tr>
+            <tr><td class="text-muted">Private price growth</td>
+                <td class="fw-medium text-primary">+5.0% per year</td></tr>
+            <tr><td class="text-muted">AOP growth</td>
+                <td class="fw-medium">+3% uplift on current year</td></tr>
+            <tr><td class="text-muted">Seasonality</td>
+                <td class="fw-medium">Applied from historical UK patterns</td></tr>
+            <tr><td class="text-muted">Confidence bands</td>
+                <td class="fw-medium">80% CI (quantile regression or historical σ)</td></tr>
+            <tr><td class="text-muted">Model</td>
+                <td class="fw-medium">
+                  {% if model_used %}
+                    <span class="badge bg-primary">LightGBM</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Statistical baseline</span>
+                  {% endif %}
+                </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Monthly detail table ──────────────────────────────────────────────── -->
+<div class="card mb-4">
+  <div class="card-header"><i class="fas fa-table me-1"></i> Monthly Forecast Detail</div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Month</th>
+            <th class="text-end">Forecast Bookings</th>
+            <th class="text-end">Forecast Revenue</th>
+            <th class="text-end">AOP Revenue</th>
+            <th class="text-end">Gap vs AOP</th>
+            <th class="text-end">Delivery %</th>
+            <th class="text-end">80% CI Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in nf.monthly %}
+          {% set delivery = (m.forecast_revenue / m.aop_revenue) if m.aop_revenue > 0 else 0 %}
+          {% set gap = m.forecast_revenue - m.aop_revenue %}
+          <tr>
+            <td class="fw-medium">{{ m.label }}</td>
+            <td class="text-end">{{ "{:,}".format(m.forecast_bookings) }}</td>
+            <td class="text-end fw-medium">{{ m.forecast_revenue | currency }}</td>
+            <td class="text-end text-muted">{{ m.aop_revenue | currency }}</td>
+            <td class="text-end {{ 'text-success' if gap >= 0 else 'text-danger' }}">
+              {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+            </td>
+            <td class="text-end">
+              <span class="badge {{ 'bg-success' if delivery >= 0.97 else ('bg-danger' if delivery < 0.90 else 'bg-warning text-dark') }}">
+                {{ (delivery * 100)|round(1) }}%
+              </span>
+            </td>
+            <td class="text-end text-muted small">
+              {{ m.ci80_lower_revenue | currency }} – {{ m.ci80_upper_revenue | currency }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="table-secondary fw-bold">
+          <tr>
+            <td>TOTAL</td>
+            <td class="text-end">{{ "{:,}".format(nf.monthly | sum(attribute='forecast_bookings')) }}</td>
+            <td class="text-end">{{ total_forecast | currency }}</td>
+            <td class="text-end text-muted">{{ total_aop | currency }}</td>
+            {% set total_gap = total_forecast - total_aop %}
+            <td class="text-end {{ 'text-success' if total_gap >= 0 else 'text-danger' }}">
+              {{ '+' if total_gap >= 0 else '' }}{{ total_gap | currency }}
+            </td>
+            {% set tot_del = (total_forecast / total_aop) if total_aop > 0 else 0 %}
+            <td class="text-end">
+              <span class="badge {{ 'bg-success' if tot_del >= 0.97 else ('bg-danger' if tot_del < 0.90 else 'bg-warning text-dark') }}">
+                {{ (tot_del * 100)|round(1) }}%
+              </span>
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Practice list for cascading dropdown ──────────────────────────────────
+const ALL_PRACTICES = {{ practice_list | safe }};
+const currentLevel  = "{{ level }}";
+const currentAreaId = "{{ area_id }}";
+const currentPracticeId = "{{ practice_id }}";
+
+// Populate practice dropdown filtered by selected area
+function populatePracticeDropdown(areaId) {
+  const sel = document.getElementById('practiceSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— select practice —</option>';
+  ALL_PRACTICES
+    .filter(p => !areaId || areaId === 'all' || p.area_id === areaId)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.text  = p.name;
+      if (p.id === currentPracticeId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+}
+
+function onAreaChange() {
+  const areaVal = document.getElementById('areaSelect').value;
+  if (currentLevel === 'practice') {
+    populatePracticeDropdown(areaVal);
+  } else {
+    // Navigate to area-level forecast
+    window.location.href = `?horizon={{ horizon }}&area=${areaVal}`;
+  }
+}
+
+// "Practice" level button navigates to area+practice view
+document.getElementById('practiceLevelBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  const areaVal = document.getElementById('areaSelect')?.value || currentAreaId;
+  if (areaVal && areaVal !== 'all') {
+    document.getElementById('areaSelector').style.removeProperty('display');
+    document.getElementById('practiceSelector').style.display = '';
+    populatePracticeDropdown(areaVal);
+  } else {
+    // Show area selector first
+    document.getElementById('areaSelector').style.removeProperty('display');
+    document.getElementById('practiceSelector').style.display = '';
+    populatePracticeDropdown('');
+  }
+});
+
+// On page load: if practice level, populate dropdown with pre-selected values
+if (currentLevel === 'practice') {
+  populatePracticeDropdown(currentAreaId);
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────
+const fcLabels   = {{ fc_labels   | safe }};
+const fcRevenue  = {{ fc_revenue  | safe }};
+const fcAop      = {{ fc_aop      | safe }};
+const fcCiLower  = {{ fc_ci_lower | safe }};
+const fcCiUpper  = {{ fc_ci_upper | safe }};
+const fcBookings = {{ nf.monthly | map(attribute='forecast_bookings') | list | tojson }};
+
+// Revenue forecast chart
+const nfCtx = document.getElementById('nationalForecastChart').getContext('2d');
+new Chart(nfCtx, {
+  type: 'line',
+  data: {
+    labels: fcLabels,
+    datasets: [
+      {
+        label: 'Forecast Revenue',
+        data: fcRevenue,
+        borderColor: '#0066cc',
+        backgroundColor: 'rgba(0,102,204,0.10)',
+        borderWidth: 2.5,
+        tension: 0.35,
+        fill: false,
+        pointRadius: 5,
+        pointBackgroundColor: fcRevenue.map((v, i) => v >= fcAop[i] ? '#198754' : '#dc3545'),
+      },
+      {
+        label: 'AOP Target',
+        data: fcAop,
+        borderColor: '#198754',
+        borderDash: [6, 4],
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        tension: 0.3,
+        pointRadius: 0,
+      },
+      {
+        label: '80% CI Upper',
+        data: fcCiUpper,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(0,102,204,0.08)',
+        fill: '+1',
+        pointRadius: 0,
+        tension: 0.35,
+      },
+      {
+        label: '80% CI Lower',
+        data: fcCiLower,
+        borderColor: 'transparent',
+        fill: false,
+        pointRadius: 0,
+        tension: 0.35,
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { boxWidth: 14, font: { size: 12 } } },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            if (ctx.dataset.label.includes('CI')) return null;
+            return ` ${ctx.dataset.label}: £${ctx.raw.toLocaleString()}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        ticks: { callback: v => '£' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : (v/1000).toFixed(0)+'k') },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+    }
+  }
+});
+
+// Bookings bar chart
+const bfCtx = document.getElementById('bookingsForecastChart').getContext('2d');
+new Chart(bfCtx, {
+  type: 'bar',
+  data: {
+    labels: fcLabels,
+    datasets: [{
+      label: 'Forecast Bookings',
+      data: fcBookings,
+      backgroundColor: 'rgba(0,102,204,0.65)',
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw.toLocaleString()} appointments` } }
+    },
+    scales: {
+      y: {
+        ticks: { callback: v => v >= 1000 ? (v/1000).toFixed(0)+'k' : v },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endblock %}

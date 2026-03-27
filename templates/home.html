@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{# Hide the page-title bar on the home page #}
+{% block page_title_bar %}{% endblock %}
+
+{% block content %}
+
+<!-- Hero banner -->
+<div style="text-align:center;
+     background-image: url('{{ url_for('static', filename='online-A-long-journey.png') }}');
+     background-size:cover; background-position:center 32%;
+     width:100vw; position:relative; left:50%; right:50%;
+     margin-left:-50vw; margin-right:-50vw;
+     margin-top:-24px; min-height:220px;
+     display:flex; flex-direction:column; align-items:center; justify-content:center;
+     padding:40px 20px;">
+  <h1 style="color:#0d1846; font-weight:800; font-size:2.2rem; margin:0 0 12px;
+             text-shadow:0 1px 6px rgba(255,255,255,0.7);">
+    BDC Future Looking Practices
+  </h1>
+  <p style="color:#0d1846; font-size:1.05rem; margin:0;
+            text-shadow:0 1px 4px rgba(255,255,255,0.6);">
+    What would you like to explore today?
+  </p>
+</div>
+
+<!-- Tile grid -->
+<div style="margin-top:32px;">
+
+  <!-- Row 1 — 4 tiles -->
+  <div class="row g-3 mb-3">
+
+    <div class="col-sm-6 col-xl-3">
+      <a href="{{ url_for('headlines') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#e8f1fb;">
+          <img src="{{ url_for('static', filename='headlines.png') }}" alt="Headlines" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Headlines</div>
+        <div class="home-tile-desc">
+          National bookings, forecast revenue, and YTD delivery against AOP.
+          Traffic light splits and the bottom 5 practices requiring immediate attention.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a href="{{ url_for('performers') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#fde8ea;">
+          <img src="{{ url_for('static', filename='performers.png') }}" alt="Performers" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Performers</div>
+        <div class="home-tile-desc">
+          Top and bottom practice rankings by YTD delivery, booking rate,
+          and revenue. Filter by region or metric to identify who needs support.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a href="{{ url_for('areas_summary') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#e8f5e9;">
+          <img src="{{ url_for('static', filename='areas.png') }}" alt="Areas" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Areas</div>
+        <div class="home-tile-desc">
+          25-area performance table with regional grouping, revenue gaps,
+          and traffic light status. Click into any area for practice detail.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a href="{{ url_for('forward_looking') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#e0f2fe;">
+          <img src="{{ url_for('static', filename='outlook.png') }}" alt="Outlook" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Outlook</div>
+        <div class="home-tile-desc">
+          3-month forward-looking analysis for all 25 areas — March actual
+          plus April, May, June forecast with booking rate and practice RAG split.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Row 2 — 3 tiles -->
+  <div class="row g-3">
+
+    <div class="col-sm-6 col-xl-4">
+      <a href="{{ url_for('practices_list') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#f3e8fd;">
+          <img src="{{ url_for('static', filename='practices.png') }}" alt="Practices" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Practices</div>
+        <div class="home-tile-desc">
+          Browse and filter all 380 practices by area, status, or booking profile.
+          Drill into any practice for a full KPI breakdown, booking curve, and issue diagnosis.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+      <a href="{{ url_for('forecast_view') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#fef3c7;">
+          <img src="{{ url_for('static', filename='forecast.png') }}" alt="Forecast" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Forecast</div>
+        <div class="home-tile-desc">
+          3, 6 and 12-month revenue and bookings forecast with 80% confidence intervals,
+          powered by LightGBM. View at national, area, or practice level.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-4">
+      <a href="{{ url_for('take_action') }}" class="home-tile">
+        <div class="home-tile-icon" style="background:#fee2e2;">
+          <img src="{{ url_for('static', filename='action.png') }}" alt="Take Action" style="width:28px;height:28px;object-fit:contain;">
+        </div>
+        <div class="home-tile-title">Take Action</div>
+        <div class="home-tile-desc">
+          Practice-level action recommendations driven by the BPC decision-tree framework —
+          diagnoses Demand, Supply, or Mix issues and suggests prioritised actions.
+        </div>
+        <div class="home-tile-arrow"><i class="fas fa-arrow-right"></i></div>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<style>
+.home-tile {
+  display: flex;
+  flex-direction: column;
+  background: #f1efeb;
+  border-radius: 8px;
+  border: 1px solid #dedad4;
+  padding: 20px;
+  text-decoration: none;
+  color: #212529;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, transform 0.15s;
+  height: 100%;
+}
+.home-tile:hover {
+  box-shadow: 0 5px 18px rgba(0,0,0,0.11);
+  transform: translateY(-2px);
+  color: #0d1846;
+}
+.home-tile-icon {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.home-tile-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0d1846;
+}
+.home-tile-desc {
+  font-size: 0.82rem;
+  color: #5a5a5a;
+  flex: 1;
+  line-height: 1.55;
+}
+.home-tile-arrow {
+  margin-top: 14px;
+  color: #0d1846;
+  font-size: 0.85rem;
+  opacity: 0.45;
+}
+.home-tile:hover .home-tile-arrow { opacity: 1; }
+</style>
+{% endblock %}

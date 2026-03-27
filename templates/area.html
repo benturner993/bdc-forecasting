@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% block title %}{{ area.name }}{% endblock %}
+{% block page_title %}{{ area.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Area KPI row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-calendar-check text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Bookings (Mar)</div>
+        <div class="kpi-value">{{ "{:,}".format(area.total_bookings) }}</div>
+        <div class="kpi-sub">vs {{ "{:,}".format(area.total_expected_bookings) }} expected by day 25</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if area.booking_rate >= 0.90 else ('badge-red' if area.booking_rate < 0.75 else 'badge-amber') }}">
+        {{ (area.booking_rate * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-success-soft"><i class="fas fa-pound-sign text-success"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Forecast Revenue (Mar)</div>
+        <div class="kpi-value">{{ area.total_forecast_revenue | currency }}</div>
+        <div class="kpi-sub">AOP: {{ area.total_aop_monthly_revenue | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if area.revenue_delivery >= 0.95 else ('badge-red' if area.revenue_delivery < 0.85 else 'badge-amber') }}">
+        {{ (area.revenue_delivery * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-warning-soft"><i class="fas fa-bullseye text-warning"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">YTD Revenue vs AOP</div>
+        <div class="kpi-value">{{ area.ytd_revenue | currency }}</div>
+        <div class="kpi-sub">AOP YTD: {{ area.ytd_aop_revenue | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if area.ytd_delivery >= 0.97 else ('badge-red' if area.ytd_delivery < 0.90 else 'badge-amber') }}">
+        {{ (area.ytd_delivery * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-info-soft"><i class="fas fa-hospital text-info"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Practice Status</div>
+        <div class="kpi-value">{{ area.practice_count }} Practices</div>
+        <div class="kpi-sub">
+          <span class="text-success fw-bold">{{ area.green_count }}</span> on track ·
+          <span class="text-warning fw-bold">{{ area.amber_count }}</span> at risk ·
+          <span class="text-danger fw-bold">{{ area.red_count }}</span> off track
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts row -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="fas fa-chart-bar me-1"></i> Practice Booking Rate vs Expected (Day 25)
+      </div>
+      <div class="card-body">
+        <canvas id="practiceBookingChart" style="height:260px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="fas fa-chart-line me-1"></i> 12-Month Revenue Forecast
+      </div>
+      <div class="card-body">
+        <canvas id="areaForecastChart" style="height:260px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Practice table -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list me-1"></i> All Practices in {{ area.name }}</span>
+    <div class="btn-group btn-group-sm">
+      <a href="?sort=ytd_delivery&order=asc" class="btn btn-outline-secondary {{ 'active' if sort_by == 'ytd_delivery' }}">
+        By YTD
+      </a>
+      <a href="?sort=booking_rate&order=asc" class="btn btn-outline-secondary {{ 'active' if sort_by == 'booking_rate' }}">
+        By Booking Rate
+      </a>
+      <a href="?sort=aop_monthly_revenue&order=desc" class="btn btn-outline-secondary {{ 'active' if sort_by == 'aop_monthly_revenue' }}">
+        By AOP Size
+      </a>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Status</th>
+            <th>Practice</th>
+            <th class="text-end">Bookings</th>
+            <th class="text-end">Booking Rate</th>
+            <th class="text-end">Forecast Rev</th>
+            <th class="text-end">vs AOP</th>
+            <th class="text-end">YTD Delivery</th>
+            <th class="text-end">NHS Mix</th>
+            <th class="text-center">CI</th>
+            <th class="text-center">Profile</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in practices %}
+          <tr>
+            <td><span class="tl-dot {{ p.traffic_light }}"></span></td>
+            <td class="fw-medium small">{{ p.name }}</td>
+            <td class="text-end small">{{ "{:,}".format(p.current_month_bookings) }}</td>
+            <td class="text-end">
+              <span class="fw-medium {{ 'text-success' if p.booking_rate >= 0.90 else ('text-danger' if p.booking_rate < 0.75 else 'text-warning') }}">
+                {{ (p.booking_rate * 100)|round(1) }}%
+              </span>
+            </td>
+            <td class="text-end small">{{ p.forecast_month_revenue | currency }}</td>
+            <td class="text-end small">
+              {% set gap = p.aop_gap_revenue %}
+              <span class="{{ 'text-success' if gap >= 0 else 'text-danger' }}">
+                {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-1">
+                <div class="progress" style="height:5px;min-width:45px;">
+                  <div class="progress-bar {{ 'bg-success' if p.ytd_delivery >= 0.97 else ('bg-danger' if p.ytd_delivery < 0.90 else 'bg-warning') }}"
+                       style="width:{{ [p.ytd_delivery*100, 100]|min|round(0) }}%"></div>
+                </div>
+                <span class="small">{{ (p.ytd_delivery*100)|round(1) }}%</span>
+              </div>
+            </td>
+            <td class="text-end small">
+              <span class="{{ 'text-warning' if p.nhs_mix > 0.70 else 'text-muted' }}">
+                {{ (p.nhs_mix * 100)|round(0)|int }}% NHS
+              </span>
+            </td>
+            <td class="text-center">
+              {% if p.within_ci %}
+              <i class="fas fa-check-circle text-success" title="Within 95% CI"></i>
+              {% else %}
+              <i class="fas fa-exclamation-circle text-danger" title="Outside 95% CI"></i>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <span class="badge bg-light text-dark border small">{{ p.booking_profile }}</span>
+            </td>
+            <td>
+              <a href="{{ url_for('practice_detail', practice_id=p.id) }}" class="btn btn-xs btn-outline-primary">
+                Detail
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const pNames        = {{ p_names | safe }};
+const pBookingRates = {{ p_booking_rates | safe }};
+const pRevDelivery  = {{ p_rev_delivery | safe }};
+const pColors       = {{ p_colors | safe }};
+
+const pbCtx = document.getElementById('practiceBookingChart').getContext('2d');
+new Chart(pbCtx, {
+  type: 'bar',
+  data: {
+    labels: pNames,
+    datasets: [{
+      label: 'Booking Rate %',
+      data: pBookingRates,
+      backgroundColor: pColors,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% of expected` }}
+    },
+    scales: {
+      x: {
+        min: 50, max: 130,
+        ticks: { callback: v => v + '%' },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+    }
+  }
+});
+
+const fcLabels   = {{ fc_labels | safe }};
+const fcRevenue  = {{ fc_revenue | safe }};
+const fcAop      = {{ fc_aop | safe }};
+const fcCiLower  = {{ fc_ci_lower | safe }};
+const fcCiUpper  = {{ fc_ci_upper | safe }};
+
+const fcCtx = document.getElementById('areaForecastChart').getContext('2d');
+new Chart(fcCtx, {
+  type: 'line',
+  data: {
+    labels: fcLabels,
+    datasets: [
+      {
+        label: 'Forecast Revenue',
+        data: fcRevenue,
+        borderColor: '#0066cc',
+        backgroundColor: 'rgba(0,102,204,0.1)',
+        tension: 0.3,
+        fill: false,
+        pointRadius: 3,
+      },
+      {
+        label: 'AOP Target',
+        data: fcAop,
+        borderColor: '#198754',
+        borderDash: [5,5],
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        pointRadius: 0,
+      },
+      {
+        label: '80% CI Upper',
+        data: fcCiUpper,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(0,102,204,0.08)',
+        fill: '+1',
+        pointRadius: 0,
+      },
+      {
+        label: '80% CI Lower',
+        data: fcCiLower,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(0,102,204,0.08)',
+        fill: false,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ` £${ctx.raw.toLocaleString()}` }}
+    },
+    scales: {
+      y: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } },
+      x: { ticks: { font: { size: 10 } } }
+    }
+  }
+});
+</script>
+{% endblock %}

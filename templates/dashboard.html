@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}National Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- KPI Row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-calendar-check text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Bookings This Month</div>
+        <div class="kpi-value">{{ "{:,}".format(gs.total_bookings_this_month) }}</div>
+        <div class="kpi-sub">vs {{ "{:,}".format(gs.total_expected_bookings) }} expected</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if gs.overall_booking_rate >= 0.90 else ('badge-red' if gs.overall_booking_rate < 0.75 else 'badge-amber') }}">
+        {{ (gs.overall_booking_rate * 100) | round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-success-soft"><i class="fas fa-pound-sign text-success"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Forecast Revenue (Mar)</div>
+        <div class="kpi-value">{{ gs.total_forecast_revenue | currency }}</div>
+        <div class="kpi-sub">AOP: {{ gs.total_aop_monthly_revenue | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if gs.overall_revenue_delivery >= 0.95 else ('badge-red' if gs.overall_revenue_delivery < 0.85 else 'badge-amber') }}">
+        {{ (gs.overall_revenue_delivery * 100) | round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-warning-soft"><i class="fas fa-bullseye text-warning"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">YTD Revenue vs AOP</div>
+        <div class="kpi-value">{{ gs.total_ytd_revenue | currency }}</div>
+        <div class="kpi-sub">AOP: {{ gs.total_ytd_aop | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if gs.overall_ytd_delivery >= 0.97 else ('badge-red' if gs.overall_ytd_delivery < 0.90 else 'badge-amber') }}">
+        {{ (gs.overall_ytd_delivery * 100) | round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-info-soft"><i class="fas fa-hospital text-info"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Practice Performance</div>
+        <div class="kpi-value">{{ gs.total_practices }} Practices</div>
+        <div class="kpi-sub">
+          <span class="text-success fw-bold">{{ gs.green_count }} on track</span> ·
+          <span class="text-warning fw-bold">{{ gs.amber_count }} at risk</span> ·
+          <span class="text-danger fw-bold">{{ gs.red_count }} off track</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Traffic Light Summary + Area Chart -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="fas fa-traffic-light me-1"></i> Performance Distribution
+      </div>
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <canvas id="tlChart" style="max-height:180px;max-width:180px;"></canvas>
+        <div class="tl-legend mt-3">
+          <span class="tl-dot green"></span> Top 25% — On Track ({{ gs.green_count }})
+          <span class="tl-dot amber ms-3"></span> Mid 50% — At Risk ({{ gs.amber_count }})
+          <span class="tl-dot red ms-3"></span> Bottom 25% — Off Track ({{ gs.red_count }})
+        </div>
+        <div class="mt-3 w-100">
+          <div class="mb-1 d-flex justify-content-between small">
+            <span>On Track</span><span>{{ ((gs.green_count / gs.total_practices)*100)|round(0)|int }}%</span>
+          </div>
+          <div class="progress mb-2" style="height:8px">
+            <div class="progress-bar bg-success" style="width:{{ ((gs.green_count/gs.total_practices)*100)|round(0) }}%"></div>
+            <div class="progress-bar bg-warning" style="width:{{ ((gs.amber_count/gs.total_practices)*100)|round(0) }}%"></div>
+            <div class="progress-bar bg-danger" style="width:{{ ((gs.red_count/gs.total_practices)*100)|round(0) }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="fas fa-chart-bar me-1"></i> YTD Revenue Delivery by Area (% of AOP)
+        <span class="text-muted small ms-2">Target line = 100%</span>
+      </div>
+      <div class="card-body">
+        <canvas id="areaBarChart" style="height:220px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Worst + Best Performers -->
+<div class="row g-3 mb-4">
+  <div class="col-xl-6">
+    <div class="card border-danger">
+      <div class="card-header bg-danger text-white">
+        <i class="fas fa-exclamation-triangle me-1"></i> 5 Worst Performers — Immediate Action Required
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Practice</th>
+              <th>Area</th>
+              <th class="text-end">Booking Rate</th>
+              <th class="text-end">YTD Delivery</th>
+              <th class="text-end">Rev Gap</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in gs.worst_performers %}
+            <tr>
+              <td><span class="tl-dot red me-1"></span>{{ p.name }}</td>
+              <td class="text-muted small">{{ p.area_name }}</td>
+              <td class="text-end">
+                <span class="badge bg-danger">{{ (p.booking_rate*100)|round(1) }}%</span>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-danger">{{ (p.ytd_delivery*100)|round(1) }}%</span>
+              </td>
+              <td class="text-end text-danger small">
+                {{ p.aop_gap_revenue | currency }}
+              </td>
+              <td>
+                <a href="{{ url_for('practice_detail', practice_id=p.id) }}" class="btn btn-xs btn-outline-secondary">
+                  View <i class="fas fa-chevron-right fa-xs"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="card border-success">
+      <div class="card-header bg-success text-white">
+        <i class="fas fa-star me-1"></i> 5 Best Performers — Share Best Practice
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Practice</th>
+              <th>Area</th>
+              <th class="text-end">Booking Rate</th>
+              <th class="text-end">YTD Delivery</th>
+              <th class="text-end">Rev Surplus</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in gs.best_performers %}
+            <tr>
+              <td><span class="tl-dot green me-1"></span>{{ p.name }}</td>
+              <td class="text-muted small">{{ p.area_name }}</td>
+              <td class="text-end">
+                <span class="badge bg-success">{{ (p.booking_rate*100)|round(1) }}%</span>
+              </td>
+              <td class="text-end">
+                <span class="badge bg-success">{{ (p.ytd_delivery*100)|round(1) }}%</span>
+              </td>
+              <td class="text-end text-success small">
+                +{{ p.aop_gap_revenue | currency }}
+              </td>
+              <td>
+                <a href="{{ url_for('practice_detail', practice_id=p.id) }}" class="btn btn-xs btn-outline-secondary">
+                  View <i class="fas fa-chevron-right fa-xs"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Area Summary Table -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="fas fa-table me-1"></i> All Areas — Performance Summary
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Status</th>
+            <th>Area</th>
+            <th>Region</th>
+            <th class="text-end">Practices</th>
+            <th class="text-end">Bookings (Mar)</th>
+            <th class="text-end">vs Expected</th>
+            <th class="text-end">Forecast Rev</th>
+            <th class="text-end">vs AOP Rev</th>
+            <th class="text-end">YTD Delivery</th>
+            <th class="text-center">Mix</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for area in areas %}
+          <tr class="area-row">
+            <td>
+              <span class="tl-dot {{ area.traffic_light }}"></span>
+            </td>
+            <td class="fw-medium">{{ area.name }}</td>
+            <td class="text-muted small">{{ area.region }}</td>
+            <td class="text-end">
+              {{ area.practice_count }}
+              <small class="text-muted">
+                (<span class="text-success">{{ area.green_count }}</span>/
+                <span class="text-warning">{{ area.amber_count }}</span>/
+                <span class="text-danger">{{ area.red_count }}</span>)
+              </small>
+            </td>
+            <td class="text-end">{{ "{:,}".format(area.total_bookings) }}</td>
+            <td class="text-end">
+              <span class="{{ 'text-success' if area.booking_rate >= 0.90 else ('text-danger' if area.booking_rate < 0.75 else 'text-warning') }} fw-medium">
+                {{ (area.booking_rate * 100)|round(1) }}%
+              </span>
+            </td>
+            <td class="text-end">{{ area.total_forecast_revenue | currency }}</td>
+            <td class="text-end">
+              {% set gap = area.total_forecast_revenue - area.total_aop_monthly_revenue %}
+              <span class="{{ 'text-success' if gap >= 0 else 'text-danger' }}">
+                {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-2">
+                <div class="progress flex-grow-1" style="height:6px;min-width:60px">
+                  <div class="progress-bar {{ 'bg-success' if area.ytd_delivery >= 0.97 else ('bg-danger' if area.ytd_delivery < 0.90 else 'bg-warning') }}"
+                       style="width:{{ [area.ytd_delivery*100, 100]|min|round(0) }}%"></div>
+                </div>
+                <span class="fw-medium small">{{ (area.ytd_delivery*100)|round(1) }}%</span>
+              </div>
+            </td>
+            <td class="text-center">
+              {% if area.connected_care %}
+              <span class="badge bg-info-subtle text-info border border-info-subtle" title="Connected Care area">CC</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('area_detail', area_id=area.id) }}" class="btn btn-xs btn-outline-primary">
+                Detail <i class="fas fa-chevron-right fa-xs"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const tlCtx = document.getElementById('tlChart').getContext('2d');
+new Chart(tlCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['On Track', 'At Risk', 'Off Track'],
+    datasets: [{
+      data: [{{ gs.green_count }}, {{ gs.amber_count }}, {{ gs.red_count }}],
+      backgroundColor: ['#198754','#ffc107','#dc3545'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    cutout: '65%',
+    plugins: { legend: { display: false }, tooltip: { callbacks: {
+      label: ctx => ` ${ctx.label}: ${ctx.raw} practices`
+    }}}
+  }
+});
+
+const areaLabels = {{ area_labels | safe }};
+const areaYtd   = {{ area_ytd | safe }};
+const areaColors = {{ area_tl_colors | safe }};
+
+const areaCtx = document.getElementById('areaBarChart').getContext('2d');
+new Chart(areaCtx, {
+  type: 'bar',
+  data: {
+    labels: areaLabels,
+    datasets: [{
+      label: 'YTD Revenue Delivery (%)',
+      data: areaYtd,
+      backgroundColor: areaColors,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: {
+        label: ctx => ` ${ctx.raw}% of AOP`
+      }}
+    },
+    scales: {
+      x: {
+        min: 70,
+        max: 115,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => v + '%' }
+      },
+      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    },
+    plugins: {
+      annotation: {
+        annotations: {
+          target: {
+            type: 'line', xMin: 100, xMax: 100,
+            borderColor: 'rgba(0,0,0,0.4)', borderWidth: 1.5,
+            borderDash: [4,4]
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}Performers{% endblock %}
+{% block page_title %}Practice Performance Rankings{% endblock %}
+
+{% block content %}
+
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Practice Performance Rankings</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
+  Ranked individual practice performance across the network of 380 practices.
+  Use this page to identify which practices need immediate support and which are delivering
+  best practice to share across areas. Traffic lights are based on the national percentile rank —
+  Green = top 25%, Red = bottom 25%. Use the filters below to adjust the ranking metric,
+  number of practices shown, and region.
+</p>
+
+<!-- Controls -->
+<div class="card mb-4">
+  <div class="card-body py-2 d-flex flex-wrap gap-3 align-items-center">
+
+    <!-- Region filter -->
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="fw-bold small text-muted text-nowrap">
+        <i class="fas fa-map-marker-alt me-1"></i>Region:
+      </span>
+      <div class="btn-group btn-group-sm flex-wrap">
+        <a href="?metric={{ metric }}&n={{ n }}&region=all"
+           class="btn {{ 'btn-primary' if region == 'all' else 'btn-outline-primary' }}">All</a>
+        {% for rname in all_regions %}
+        <a href="?metric={{ metric }}&n={{ n }}&region={{ rname | urlencode }}"
+           class="btn {{ 'btn-primary' if region == rname else 'btn-outline-primary' }}">{{ rname }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="vr d-none d-lg-block"></div>
+
+    <!-- Rank by -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="fw-bold small text-muted text-nowrap">Rank by:</span>
+      <div class="btn-group btn-group-sm">
+        <a href="?metric=ytd_delivery&n={{ n }}&region={{ region | urlencode }}"
+           class="btn btn-outline-primary {{ 'active' if metric == 'ytd_delivery' }}">YTD Delivery</a>
+        <a href="?metric=booking_rate&n={{ n }}&region={{ region | urlencode }}"
+           class="btn btn-outline-primary {{ 'active' if metric == 'booking_rate' }}">Booking Rate</a>
+        <a href="?metric=revenue_delivery&n={{ n }}&region={{ region | urlencode }}"
+           class="btn btn-outline-primary {{ 'active' if metric == 'revenue_delivery' }}">Revenue Delivery</a>
+      </div>
+    </div>
+
+    <!-- Show N -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="fw-bold small text-muted text-nowrap">Show:</span>
+      <div class="btn-group btn-group-sm">
+        <a href="?metric={{ metric }}&n=5&region={{ region | urlencode }}"
+           class="btn btn-outline-secondary {{ 'active' if n == 5 }}">Top/Bottom 5</a>
+        <a href="?metric={{ metric }}&n=10&region={{ region | urlencode }}"
+           class="btn btn-outline-secondary {{ 'active' if n == 10 }}">Top/Bottom 10</a>
+        <a href="?metric={{ metric }}&n=20&region={{ region | urlencode }}"
+           class="btn btn-outline-secondary {{ 'active' if n == 20 }}">Top/Bottom 20</a>
+      </div>
+    </div>
+
+    <!-- Context summary -->
+    <div class="ms-auto text-muted small d-none d-lg-block">
+      {% if region == 'all' %}
+        Ranked across all <strong>380</strong> practices
+      {% else %}
+        Ranked across <strong>{{ pool_size }}</strong> practices in <strong>{{ region }}</strong>
+      {% endif %}
+      &nbsp;·&nbsp; by <strong>{{ metric_label }}</strong>
+    </div>
+
+  </div>
+</div>
+
+<div class="row g-4">
+
+  <!-- Best performers -->
+  <div class="col-xl-6">
+    <div class="card border-success h-100">
+      <div class="card-header bg-success text-white d-flex justify-content-between">
+        <span><i class="fas fa-arrow-up me-1"></i> Top {{ n }} — Best Practice
+          {% if region != 'all' %}<span class="badge bg-success-subtle text-success ms-1 border border-success-subtle">{{ region }}</span>{% endif %}
+        </span>
+        <span class="badge bg-white text-success">{{ metric_label }}</span>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="text-center" style="width:32px">#</th>
+              <th>Practice</th>
+              <th>Area</th>
+              <th class="text-end">{{ metric_label }}</th>
+              <th class="text-end">Booking Rate</th>
+              <th class="text-end">NHS Mix</th>
+              <th class="text-end">Rev/Appt</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in top_n %}
+            <tr>
+              <td class="text-center fw-bold text-success small">{{ loop.index }}</td>
+              <td>
+                <span class="tl-dot {{ p.traffic_light }} me-1"></span>
+                <span class="fw-medium small">{{ p.name }}</span>
+              </td>
+              <td>
+                <a href="{{ url_for('area_detail', area_id=p.area_id) }}"
+                   class="text-decoration-none text-muted small">{{ p.area_name }}</a>
+              </td>
+              <td class="text-end">
+                <span class="fw-bold text-success">
+                  {% if metric == 'ytd_delivery' %}{{ (p.ytd_delivery*100)|round(1) }}%
+                  {% elif metric == 'booking_rate' %}{{ (p.booking_rate*100)|round(1) }}%
+                  {% else %}{{ (p.revenue_delivery*100)|round(1) }}%
+                  {% endif %}
+                </span>
+              </td>
+              <td class="text-end small">{{ (p.booking_rate*100)|round(1) }}%</td>
+              <td class="text-end small text-muted">{{ (p.nhs_mix*100)|round(0)|int }}%</td>
+              <td class="text-end small fw-medium text-success">{{ p.rev_per_booking | currency }}</td>
+              <td><a href="{{ url_for('practice_detail', practice_id=p.id) }}" class="btn btn-xs btn-outline-success">View →</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer bg-success-subtle small text-success">
+        <i class="fas fa-star me-1"></i>
+        These practices are exceeding AOP targets. Consider sharing their approach — booking profile,
+        private mix strategy, and scheduling practices — across the network.
+      </div>
+    </div>
+  </div>
+
+  <!-- Worst performers -->
+  <div class="col-xl-6">
+    <div class="card border-danger h-100">
+      <div class="card-header bg-danger text-white d-flex justify-content-between">
+        <span><i class="fas fa-arrow-down me-1"></i> Bottom {{ n }} — Needs Support
+          {% if region != 'all' %}<span class="badge bg-danger-subtle text-danger ms-1 border border-danger-subtle">{{ region }}</span>{% endif %}
+        </span>
+        <span class="badge bg-white text-danger">{{ metric_label }}</span>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="text-center" style="width:32px">#</th>
+              <th>Practice</th>
+              <th>Area</th>
+              <th class="text-end">{{ metric_label }}</th>
+              <th class="text-end">Booking Rate</th>
+              <th class="text-end">NHS Mix</th>
+              <th class="text-center">Issues</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in bottom_n %}
+            <tr>
+              <td class="text-center fw-bold text-danger small">{{ loop.index }}</td>
+              <td>
+                <span class="tl-dot {{ p.traffic_light }} me-1"></span>
+                <span class="fw-medium small">{{ p.name }}</span>
+              </td>
+              <td>
+                <a href="{{ url_for('area_detail', area_id=p.area_id) }}"
+                   class="text-decoration-none text-muted small">{{ p.area_name }}</a>
+              </td>
+              <td class="text-end">
+                <span class="fw-bold text-danger">
+                  {% if metric == 'ytd_delivery' %}{{ (p.ytd_delivery*100)|round(1) }}%
+                  {% elif metric == 'booking_rate' %}{{ (p.booking_rate*100)|round(1) }}%
+                  {% else %}{{ (p.revenue_delivery*100)|round(1) }}%
+                  {% endif %}
+                </span>
+              </td>
+              <td class="text-end small">{{ (p.booking_rate*100)|round(1) }}%</td>
+              <td class="text-end small">
+                <span class="{{ 'text-warning fw-medium' if p.nhs_mix > 0.70 else 'text-muted' }}">
+                  {{ (p.nhs_mix*100)|round(0)|int }}%
+                </span>
+              </td>
+              <td class="text-center">
+                {% for issue in p.issues %}
+                <span class="badge badge-xs {{ 'bg-warning text-dark' if issue.type == 'demand' else ('bg-info text-dark' if issue.type == 'mix' else 'bg-secondary') }}"
+                      title="{{ issue.title }}">
+                  {{ issue.type[0]|upper }}
+                </span>
+                {% endfor %}
+              </td>
+              <td><a href="{{ url_for('practice_detail', practice_id=p.id) }}" class="btn btn-xs btn-outline-danger">View →</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer bg-danger-subtle small text-danger">
+        <i class="fas fa-info-circle me-1"></i>
+        Issue codes: <strong>D</strong> = Demand, <strong>M</strong> = Mix (NHS-heavy), <strong>S</strong> = Supply/Capacity.
+        Click a practice to see full explainability and recommended actions.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Revenue per booking insight -->
+<div class="card mt-4">
+  <div class="card-header">
+    <i class="fas fa-lightbulb me-1"></i> Revenue per Appointment — Top {{ n }} vs Bottom {{ n }}
+    {% if region != 'all' %}<span class="badge bg-secondary ms-1">{{ region }}</span>{% endif %}
+    <span class="text-muted small ms-2">A low figure often indicates NHS-heavy mix suppressing revenue</span>
+  </div>
+  <div class="card-body">
+    <canvas id="revPerApptChart" style="height:200px;"></canvas>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const bottomNames = {{ bottom_n | map(attribute='location') | list | tojson }};
+const topNames    = {{ top_n    | map(attribute='location') | list | tojson }};
+const bottomRevPA = {{ bottom_n | map(attribute='rev_per_booking') | list | tojson }};
+const topRevPA    = {{ top_n    | map(attribute='rev_per_booking')    | list | tojson }};
+
+const ctx = document.getElementById('revPerApptChart').getContext('2d');
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: [...bottomNames.map(n => '↓ ' + n), ...topNames.map(n => '↑ ' + n)],
+    datasets: [{
+      label: 'Revenue per Appointment (£)',
+      data: [...bottomRevPA, ...topRevPA],
+      backgroundColor: [
+        ...bottomRevPA.map(() => 'rgba(220,53,69,0.7)'),
+        ...topRevPA.map(() => 'rgba(25,135,84,0.7)'),
+      ],
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` £${ctx.raw.toFixed(2)} per appointment` }}
+    },
+    scales: {
+      y: { ticks: { callback: v => '£' + v }, grid: { color: 'rgba(0,0,0,0.04)' } },
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+    }
+  }
+});
+</script>
+<style>
+.badge-xs { font-size: 9px; padding: 2px 5px; }
+</style>
+{% endblock %}

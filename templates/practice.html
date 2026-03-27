@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+{% block title %}{{ p.name }}{% endblock %}
+{% block page_title %}Practice Detail{% endblock %}
+
+{% block content %}
+
+<!-- Practice header -->
+<div class="practice-header mb-4">
+  <div class="d-flex align-items-start gap-3">
+    <div class="tl-badge-lg {{ p.traffic_light }}">
+      {% if p.traffic_light == 'green' %}<i class="fas fa-check"></i>
+      {% elif p.traffic_light == 'red' %}<i class="fas fa-times"></i>
+      {% else %}<i class="fas fa-minus"></i>{% endif %}
+    </div>
+    <div>
+      <h2 class="mb-0">{{ p.name }}</h2>
+      <div class="text-muted mt-1">
+        <a href="{{ url_for('area_detail', area_id=p.area_id) }}" class="text-decoration-none">
+          <i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ p.area_name }}
+        </a>
+        <span class="mx-2">·</span>
+        <span>{{ p.region }}</span>
+        {% if p.connected_care %}
+        <span class="ms-2 badge bg-info-subtle text-info border border-info-subtle">
+          <i class="fas fa-link me-1"></i>Connected Care
+        </span>
+        {% endif %}
+        <span class="ms-2 badge bg-light text-dark border">
+          <i class="fas fa-clock me-1"></i>{{ p.booking_profile | title }} booking practice
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI row -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-primary-soft"><i class="fas fa-calendar-check text-primary"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Bookings (Mar, day 25)</div>
+        <div class="kpi-value">{{ "{:,}".format(p.current_month_bookings) }}</div>
+        <div class="kpi-sub">Expected: {{ p.expected_bookings_by_now | round(0) | int | string | replace('.0','') }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if p.booking_rate >= 0.90 else ('badge-red' if p.booking_rate < 0.75 else 'badge-amber') }}">
+        {{ (p.booking_rate * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-success-soft"><i class="fas fa-pound-sign text-success"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">Forecast Revenue (Mar)</div>
+        <div class="kpi-value">{{ p.forecast_month_revenue | currency }}</div>
+        <div class="kpi-sub">AOP: {{ p.aop_monthly_revenue | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if p.revenue_delivery >= 0.95 else ('badge-red' if p.revenue_delivery < 0.85 else 'badge-amber') }}">
+        {{ (p.revenue_delivery * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon bg-warning-soft"><i class="fas fa-bullseye text-warning"></i></div>
+      <div class="kpi-body">
+        <div class="kpi-label">YTD Revenue vs AOP</div>
+        <div class="kpi-value">{{ p.ytd_revenue | currency }}</div>
+        <div class="kpi-sub">AOP YTD: {{ p.ytd_aop_revenue | currency }}</div>
+      </div>
+      <div class="kpi-badge {{ 'badge-green' if p.ytd_delivery >= 0.97 else ('badge-red' if p.ytd_delivery < 0.90 else 'badge-amber') }}">
+        {{ (p.ytd_delivery * 100)|round(1) }}%
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="kpi-card">
+      <div class="kpi-icon {{ 'bg-success-soft' if p.within_ci else 'bg-danger-soft' }}">
+        <i class="fas {{ 'fa-check-circle text-success' if p.within_ci else 'fa-exclamation-triangle text-danger' }}"></i>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Confidence Range (95% CI)</div>
+        <div class="kpi-value">{{ p.ci_lower }}–{{ p.ci_upper }}</div>
+        <div class="kpi-sub">
+          AOP target: {{ p.aop_monthly_bookings }} ·
+          {% if p.within_ci %}
+          <span class="text-success">Within range</span>
+          {% else %}
+          <span class="text-danger">Outside range</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mix + Revenue per Booking -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-pie-chart me-1"></i> Appointment Mix</div>
+      <div class="card-body d-flex flex-column align-items-center justify-content-center">
+        <canvas id="mixChart" style="max-height:160px;max-width:160px;"></canvas>
+        <div class="mt-3 w-100 small">
+          <div class="d-flex justify-content-between mb-1">
+            <span><i class="fas fa-circle text-warning me-1"></i>NHS</span>
+            <span class="fw-medium">{{ (p.nhs_mix*100)|round(1) }}% · avg {{ p.avg_nhs_value | currency }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span><i class="fas fa-circle text-primary me-1"></i>Private</span>
+            <span class="fw-medium">{{ (p.private_mix*100)|round(1) }}% · avg {{ p.avg_private_value | currency }}</span>
+          </div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between">
+            <span class="fw-medium">Rev / Appt</span>
+            <span class="fw-bold {{ 'text-success' if p.rev_per_booking > 100 else 'text-warning' }}">
+              {{ p.rev_per_booking | currency }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card h-100">
+      <div class="card-header">
+        <i class="fas fa-chart-area me-1"></i> Booking Curve — Actual vs Expected
+        <span class="text-muted small ms-2">Day 1–31 of March 2026</span>
+      </div>
+      <div class="card-body">
+        <canvas id="curveChart" style="height:200px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-warehouse me-1"></i> Capacity & Whitespace</div>
+      <div class="card-body">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Monthly capacity</span><span class="fw-medium">{{ "{:,}".format(p.monthly_capacity) }} slots</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Target utilisation</span><span class="fw-medium">{{ (p.target_utilization*100)|round(1) }}%</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Forecast utilisation</span>
+            <span class="fw-medium {{ 'text-success' if p.whitespace < 0.10 else ('text-warning' if p.whitespace < 0.20 else 'text-danger') }}">
+              {{ ((1 - p.whitespace)*100)|round(1) }}%
+            </span>
+          </div>
+        </div>
+        <div class="mb-2 small text-muted">Capacity usage</div>
+        <div class="progress mb-1" style="height:18px;border-radius:4px;">
+          <div class="progress-bar bg-primary" style="width:{{ ((1 - p.whitespace)*100)|round(0) }}%">
+            <span class="small">Booked {{ ((1 - p.whitespace)*100)|round(0)|int }}%</span>
+          </div>
+          <div class="progress-bar bg-light text-muted border-start" style="width:{{ (p.whitespace*100)|round(0) }}%">
+            <span class="small text-muted">{{ (p.whitespace*100)|round(0)|int }}% open</span>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-top">
+          <div class="d-flex justify-content-between small mb-1">
+            <span>NHS appointments (Mar)</span>
+            <span class="fw-medium">{{ "{:,}".format(p.current_nhs_bookings) }}</span>
+          </div>
+          <div class="d-flex justify-content-between small">
+            <span>Private appointments (Mar)</span>
+            <span class="fw-medium">{{ "{:,}".format(p.current_private_bookings) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Explainability Panel -->
+{% if p.issues %}
+<div class="card mb-4 border-0 shadow-sm">
+  <div class="card-header bg-dark text-white">
+    <i class="fas fa-lightbulb me-1"></i> Performance Analysis & Recommended Actions
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      {% for issue in p.issues %}
+      <div class="col-md-{{ 12 // p.issues|length if p.issues|length <= 3 else 6 }}">
+        <div class="issue-card issue-{{ issue.type }} issue-{{ issue.severity }}">
+          <div class="issue-header">
+            {% if issue.type == 'demand' %}
+            <i class="fas fa-users-slash"></i>
+            {% elif issue.type == 'mix' %}
+            <i class="fas fa-balance-scale"></i>
+            {% elif issue.type == 'supply' %}
+            <i class="fas fa-tools"></i>
+            {% else %}
+            <i class="fas fa-calendar-times"></i>
+            {% endif %}
+            <span class="issue-title">{{ issue.title }}</span>
+            <span class="issue-severity issue-sev-{{ issue.severity }}">{{ issue.severity | upper }}</span>
+          </div>
+          <p class="issue-desc">{{ issue.description }}</p>
+          <div class="issue-actions">
+            <div class="issue-actions-label">Recommended Actions</div>
+            <ul class="mb-0">
+              {% for action in issue.actions %}
+              <li>{{ action }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-success d-flex align-items-center mb-4">
+  <i class="fas fa-check-circle fa-lg me-3"></i>
+  <div>
+    <strong>Performance On Track</strong> — This practice is performing within the expected range.
+    No immediate action required. Continue monitoring weekly.
+  </div>
+</div>
+{% endif %}
+
+<!-- Historical trend + Revenue forecast -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-history me-1"></i> Historical Bookings vs AOP (FY 2025/26)</div>
+      <div class="card-body">
+        <canvas id="histBookingsChart" style="height:220px;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><i class="fas fa-chart-line me-1"></i> Revenue Forecast — Next 12 Months (FY 2026/27)</div>
+      <div class="card-body">
+        <canvas id="revForecastChart" style="height:220px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Forecast summary table -->
+<div class="card mb-4">
+  <div class="card-header"><i class="fas fa-table me-1"></i> Cumulative Forecast Summary</div>
+  <div class="card-body">
+    <div class="row g-3 text-center">
+      {% for horizon, label in [(3, '3-Month'), (6, '6-Month'), (12, '12-Month')] %}
+      {% set key = horizon|string + 'm' %}
+      <div class="col-md-4">
+        <div class="forecast-summary-card">
+          <div class="fs-label">{{ label }} Revenue Forecast</div>
+          <div class="fs-value">{{ pf.cumulative[key + '_revenue'] | currency }}</div>
+          <div class="fs-aop">AOP: {{ pf.cumulative[key + '_aop'] | currency }}</div>
+          {% set gap = pf.cumulative[key + '_gap'] %}
+          <div class="fs-gap {{ 'text-success' if gap >= 0 else 'text-danger' }}">
+            {{ '+' if gap >= 0 else '' }}{{ gap | currency }} vs AOP
+          </div>
+          <div class="fs-delivery {{ 'text-success' if pf.cumulative[key + '_delivery'] >= 0.97 else ('text-danger' if pf.cumulative[key + '_delivery'] < 0.90 else 'text-warning') }}">
+            {{ (pf.cumulative[key + '_delivery'] * 100)|round(1) }}% delivery
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Mix donut chart
+const mixCtx = document.getElementById('mixChart').getContext('2d');
+new Chart(mixCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['NHS', 'Private'],
+    datasets: [{
+      data: [{{ (p.nhs_mix * 100)|round(1) }}, {{ (p.private_mix * 100)|round(1) }}],
+      backgroundColor: ['#ffc107', '#0066cc'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    cutout: '60%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% of appointments` }}
+    }
+  }
+});
+
+// Booking curve chart
+const curveData = {{ curve_data | safe }};
+const curveCtx = document.getElementById('curveChart').getContext('2d');
+new Chart(curveCtx, {
+  type: 'line',
+  data: {
+    labels: curveData.days,
+    datasets: [
+      {
+        label: 'Expected (AOP curve)',
+        data: curveData.expected,
+        borderColor: '#198754',
+        borderDash: [4,4],
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        pointRadius: 0,
+      },
+      {
+        label: 'Actual / Projected',
+        data: curveData.actual,
+        borderColor: '#0066cc',
+        backgroundColor: 'rgba(0,102,204,0.08)',
+        tension: 0.4,
+        pointRadius: 0,
+        fill: false,
+      },
+      {
+        label: '95% CI Upper',
+        data: curveData.ci_upper,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(25,135,84,0.08)',
+        fill: '+1',
+        pointRadius: 0,
+      },
+      {
+        label: '95% CI Lower',
+        data: curveData.ci_lower,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(25,135,84,0.08)',
+        fill: false,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+      annotation: {
+        annotations: {
+          today: {
+            type: 'line',
+            xMin: curveData.today_day - 1,
+            xMax: curveData.today_day - 1,
+            borderColor: 'rgba(220,53,69,0.6)',
+            borderWidth: 1.5,
+            label: { content: 'Today', display: true, position: 'end', font: { size: 10 } }
+          }
+        }
+      }
+    },
+    scales: {
+      x: { title: { display: true, text: 'Day of Month', font: { size: 11 } } },
+      y: { title: { display: true, text: 'Cumulative Bookings', font: { size: 11 } } }
+    }
+  }
+});
+
+// Historical bookings bar chart
+const histLabels   = {{ hist_labels | safe }};
+const histBookings = {{ hist_bookings | safe }};
+const histAop      = {{ hist_aop | safe }};
+const histRevenue  = {{ hist_revenue | safe }};
+
+const hbCtx = document.getElementById('histBookingsChart').getContext('2d');
+new Chart(hbCtx, {
+  type: 'bar',
+  data: {
+    labels: histLabels,
+    datasets: [
+      {
+        label: 'Actual Bookings',
+        data: histBookings,
+        backgroundColor: histBookings.map((v, i) =>
+          v >= histAop[i] ? 'rgba(25,135,84,0.7)' : 'rgba(220,53,69,0.7)'
+        ),
+        borderRadius: 3,
+        order: 2,
+      },
+      {
+        label: 'AOP Target',
+        data: histAop,
+        type: 'line',
+        borderColor: '#0066cc',
+        borderDash: [4,4],
+        backgroundColor: 'transparent',
+        pointRadius: 3,
+        order: 1,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.raw.toLocaleString()}` }}
+    },
+    scales: {
+      y: { grid: { color: 'rgba(0,0,0,0.05)' } },
+      x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+    }
+  }
+});
+
+// Revenue forecast
+const fcLabels  = {{ fc_labels | safe }};
+const fcRevenue = {{ fc_revenue | safe }};
+const fcAop     = {{ fc_aop | safe }};
+const fcCiLower = {{ fc_ci_lower | safe }};
+const fcCiUpper = {{ fc_ci_upper | safe }};
+
+const rfCtx = document.getElementById('revForecastChart').getContext('2d');
+new Chart(rfCtx, {
+  type: 'line',
+  data: {
+    labels: fcLabels,
+    datasets: [
+      {
+        label: 'Forecast Revenue',
+        data: fcRevenue,
+        borderColor: '#0066cc',
+        backgroundColor: 'rgba(0,102,204,0.1)',
+        tension: 0.3,
+        fill: false,
+        pointRadius: 4,
+      },
+      {
+        label: 'AOP Target',
+        data: fcAop,
+        borderColor: '#198754',
+        borderDash: [5,5],
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        pointRadius: 0,
+      },
+      {
+        label: '80% CI Upper',
+        data: fcCiUpper,
+        borderColor: 'transparent',
+        backgroundColor: 'rgba(0,102,204,0.07)',
+        fill: '+1',
+        pointRadius: 0,
+      },
+      {
+        label: '80% CI Lower',
+        data: fcCiLower,
+        borderColor: 'transparent',
+        fill: false,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+      tooltip: { callbacks: { label: ctx => ` £${ctx.raw.toLocaleString()}` }}
+    },
+    scales: {
+      y: { ticks: { callback: v => '£' + (v/1000).toFixed(0) + 'k' } },
+      x: { ticks: { font: { size: 10 } } }
+    }
+  }
+});
+</script>
+{% endblock %}

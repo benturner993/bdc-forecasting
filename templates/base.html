@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}BDC Forecasting{% endblock %} | Bupa Dental Care</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='bupa.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: #f0f4f8;
+        }
+        /* ── Header ── */
+        .header {
+            background-color: #0d1846;
+            color: white;
+            padding: 0 20px 0 98px; /* left-pad clears the ~74px logo + margin */
+            height: 56px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .toolbar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 4px;
+        }
+        .toolbar > a, .toolbar > .nav-dropdown > a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+        .toolbar > a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .toolbar > a.active {
+            background: rgba(255,255,255,0.15);
+            color: #7ab8f5;
+        }
+        /* ── Dropdown ── */
+        .nav-dropdown { position: relative; display: inline-block; }
+        .nav-dropdown > a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.15s;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .nav-dropdown > a:hover,
+        .nav-dropdown:hover > a { background: rgba(255,255,255,0.1); color: #fff; }
+        .nav-dropdown > a.active { color: #7ab8f5; background: rgba(255,255,255,0.15); }
+        .nav-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 4px);
+            background: #1a2a5e;
+            min-width: 210px;
+            border-radius: 6px;
+            padding: 8px 0;
+            z-index: 9999;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 6px 16px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+        .nav-dropdown-menu a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .nav-dropdown-menu .menu-section {
+            padding: 8px 16px 3px;
+            font-size: 9px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin-top: 4px;
+        }
+        .nav-dropdown-menu .menu-section:first-child { border-top: none; margin-top: 0; }
+        /* ── Logo ── */
+        .logo {
+            height: 38px;
+            width: auto;           /* preserve natural aspect ratio */
+            position: absolute;
+            top: 9px;
+            left: 14px;
+            z-index: 1000;
+        }
+        /* ── Page title bar ── */
+        .page-title-bar {
+            background: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 9px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .page-title-bar .page-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0d1846;
+        }
+        .page-title-bar .meta-badge {
+            font-size: 11px;
+            font-weight: 500;
+            background: #e8f1fb;
+            color: #0d1846;
+            border-radius: 20px;
+            padding: 2px 10px;
+            border: 1px solid #c4d8f5;
+        }
+        /* ── Page description ── */
+        .page-desc {
+            background: #fffbea;
+            border-left: 3px solid #0d1846;
+            padding: 10px 16px;
+            font-size: 12px;
+            color: #495057;
+            margin-bottom: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+        /* ── Main content ── */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        /* ── Footer ── */
+        .footer {
+            background-color: #0d1846;
+            color: rgba(255,255,255,0.7);
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+            font-size: 11px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* ── Button ── */
+        button {
+            background-color: #0079c8;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        button:hover { background-color: #005fa3; }
+        @media (max-width: 768px) {
+            .header { padding-left: 90px; }
+            .main-content { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='bupa.png') }}" class="logo" alt="Bupa Logo">
+    </a>
+
+    <div class="header">
+        <div class="toolbar">
+
+            <a href="{{ url_for('home') }}"
+               class="{% if request.endpoint == 'home' %}active{% endif %}">
+                <i class="fas fa-home me-1"></i>Home
+            </a>
+
+            <a href="{{ url_for('headlines') }}"
+               class="{% if request.endpoint == 'headlines' %}active{% endif %}">
+                <i class="fas fa-newspaper me-1"></i>Headlines
+            </a>
+
+            <a href="{{ url_for('performers') }}"
+               class="{% if request.endpoint == 'performers' %}active{% endif %}">
+                <i class="fas fa-trophy me-1"></i>Performers
+            </a>
+
+            <a href="{{ url_for('areas_summary') }}"
+               class="{% if request.endpoint in ('areas_summary','area_detail') %}active{% endif %}">
+                <i class="fas fa-map-marker-alt me-1"></i>Areas
+            </a>
+
+            <a href="{{ url_for('forward_looking') }}"
+               class="{% if request.endpoint == 'forward_looking' %}active{% endif %}">
+                <i class="fas fa-binoculars me-1"></i>Outlook
+            </a>
+
+            <a href="{{ url_for('practices_list') }}"
+               class="{% if request.endpoint in ('practices_list','practice_detail') %}active{% endif %}">
+                <i class="fas fa-hospital me-1"></i>Practices
+            </a>
+
+            <a href="{{ url_for('forecast_view') }}"
+               class="{% if request.endpoint == 'forecast_view' %}active{% endif %}">
+                <i class="fas fa-chart-line me-1"></i>Forecast
+            </a>
+
+            <a href="{{ url_for('take_action') }}"
+               class="{% if request.endpoint == 'take_action' %}active{% endif %}"
+               style="background: rgba(220,53,69,0.18);">
+                <i class="fas fa-bolt me-1"></i>Take Action
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Page title / breadcrumb bar (hidden on home via block override) -->
+    {% block page_title_bar %}
+    <div class="page-title-bar">
+        <span class="page-name">{% block page_title %}{% endblock %}</span>
+        <span class="meta-badge"><i class="fas fa-calendar-day me-1"></i>Mar 25, 2026 · Day 25 of month</span>
+        <span class="meta-badge"><i class="fas fa-hospital me-1"></i>380 Practices · 25 Areas</span>
+        <span class="meta-badge text-warning"><i class="fas fa-flask me-1"></i>Synthetic data — replace with live feed</span>
+    </div>
+    {% endblock %}
+
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        &copy; 2026 Bupa Dental Care Forecasting &nbsp;·&nbsp; Non-production application &nbsp;·&nbsp; Data is synthetic
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        Chart.defaults.font.family = "'Montserrat', system-ui, sans-serif";
+        Chart.defaults.color = "#6c757d";
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

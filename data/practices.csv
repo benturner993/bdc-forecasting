@@ -1,0 +1,381 @@
+id,name,location,area_id,area_name,region,nhs_mix,private_mix,avg_nhs_value,avg_private_value,blended_value,monthly_capacity,target_utilization,booking_profile,connected_care,aop_monthly_bookings,aop_monthly_revenue,aop_annual_revenue
+P001,Bupa Dental Care Aldgate,Aldgate,A01,London East,London,0.72,0.28,41.71,203.27,86.99,702,0.865,early,True,606,52715,632580
+P002,Bupa Dental Care Bethnal Green,Bethnal Green,A01,London East,London,0.596,0.404,44.83,216.0,113.9,870,0.829,early,True,721,82119,985428
+P003,Bupa Dental Care Bow,Bow,A01,London East,London,0.752,0.248,33.99,184.63,71.3,770,0.84,late,True,647,46134,553608
+P004,Bupa Dental Care Canary Wharf,Canary Wharf,A01,London East,London,0.708,0.292,30.53,178.16,73.7,725,0.834,mixed,True,605,44587,535044
+P005,Bupa Dental Care Dalston,Dalston,A01,London East,London,0.565,0.435,35.59,215.87,114.05,730,0.906,mixed,True,661,75384,904608
+P006,Bupa Dental Care Hackney,Hackney,A01,London East,London,0.661,0.339,44.14,218.02,103.16,636,0.913,mixed,True,580,59834,718008
+P007,Bupa Dental Care Homerton,Homerton,A01,London East,London,0.735,0.265,30.49,147.7,61.56,870,0.856,early,True,744,45800,549600
+P008,Bupa Dental Care Leyton,Leyton,A01,London East,London,0.598,0.402,32.77,186.95,94.74,622,0.825,late,True,513,48603,583236
+P009,Bupa Dental Care Limehouse,Limehouse,A01,London East,London,0.684,0.316,36.78,200.28,88.43,826,0.919,mixed,True,759,67121,805452
+P010,Bupa Dental Care Mile End,Mile End,A01,London East,London,0.789,0.211,31.62,152.33,57.13,740,0.842,mixed,True,623,35593,427116
+P011,Bupa Dental Care Poplar,Poplar,A01,London East,London,0.624,0.376,45.93,213.0,108.77,858,0.91,early,True,780,84842,1018104
+P012,Bupa Dental Care Shoreditch,Shoreditch,A01,London East,London,0.684,0.316,42.3,237.53,104.04,682,0.845,mixed,True,576,59928,719136
+P013,Bupa Dental Care Stepney,Stepney,A01,London East,London,0.711,0.289,37.88,176.55,77.99,834,0.878,early,True,732,57091,685092
+P014,Bupa Dental Care Stratford,Stratford,A01,London East,London,0.7,0.3,31.0,158.63,69.26,606,0.889,late,True,538,37262,447144
+P015,Bupa Dental Care Walthamstow,Walthamstow,A01,London East,London,0.824,0.176,43.13,215.13,73.47,802,0.877,early,True,703,51650,619800
+P016,Bupa Dental Care Whitechapel,Whitechapel,A01,London East,London,0.654,0.346,43.03,209.85,100.67,661,0.856,late,True,565,56880,682560
+P017,Bupa Dental Care Acton,Acton,A02,London West,London,0.397,0.603,40.26,319.05,208.34,991,0.892,mixed,True,883,183964,2207568
+P018,Bupa Dental Care Bayswater,Bayswater,A02,London West,London,0.198,0.802,32.65,221.03,183.8,860,0.856,mixed,True,736,135279,1623348
+P019,Bupa Dental Care Chiswick,Chiswick,A02,London West,London,0.378,0.622,30.32,231.46,155.48,938,0.877,late,True,822,127805,1533660
+P020,Bupa Dental Care Ealing,Ealing,A02,London West,London,0.45,0.55,33.49,311.79,186.65,703,0.833,late,True,585,109189,1310268
+P021,Bupa Dental Care Fulham,Fulham,A02,London West,London,0.316,0.684,34.32,296.17,213.42,926,0.904,late,True,837,178631,2143572
+P022,Bupa Dental Care Hammersmith,Hammersmith,A02,London West,London,0.291,0.709,41.92,224.15,171.08,802,0.824,mixed,True,660,112910,1354920
+P023,Bupa Dental Care Holland Park,Holland Park,A02,London West,London,0.307,0.693,44.07,356.29,260.52,710,0.91,late,True,646,168295,2019540
+P024,Bupa Dental Care Kensington,Kensington,A02,London West,London,0.323,0.677,39.14,314.32,225.48,739,0.877,early,True,647,145882,1750584
+P025,Bupa Dental Care Ladbroke Grove,Ladbroke Grove,A02,London West,London,0.406,0.594,31.08,302.45,192.3,892,0.826,early,True,736,141535,1698420
+P026,Bupa Dental Care Maida Vale,Maida Vale,A02,London West,London,0.225,0.775,38.49,218.65,178.1,880,0.911,late,True,801,142660,1711920
+P027,Bupa Dental Care Notting Hill,Notting Hill,A02,London West,London,0.456,0.544,39.81,260.38,159.77,903,0.907,mixed,True,819,130849,1570188
+P028,Bupa Dental Care Paddington,Paddington,A02,London West,London,0.203,0.797,45.8,221.96,186.22,876,0.871,mixed,True,763,142088,1705056
+P029,Bupa Dental Care Shepherd's Bush,Shepherd's Bush,A02,London West,London,0.476,0.524,32.33,282.74,163.53,963,0.882,mixed,True,849,138833,1665996
+P030,Bupa Dental Care Southall,Southall,A02,London West,London,0.48,0.52,39.89,345.03,198.48,931,0.897,early,True,834,165531,1986372
+P031,Bupa Dental Care Turnham Green,Turnham Green,A02,London West,London,0.356,0.644,42.15,290.32,201.95,784,0.906,mixed,True,710,143382,1720584
+P032,Bupa Dental Care West Ealing,West Ealing,A02,London West,London,0.355,0.645,45.41,287.81,201.7,962,0.902,mixed,True,867,174871,2098452
+P033,Bupa Dental Care Archway,Archway,A03,London North,London,0.633,0.367,39.65,216.8,104.59,937,0.847,early,True,794,83047,996564
+P034,Bupa Dental Care Camden,Camden,A03,London North,London,0.612,0.388,43.47,239.04,119.27,880,0.906,mixed,True,797,95059,1140708
+P035,Bupa Dental Care Chalk Farm,Chalk Farm,A03,London North,London,0.545,0.455,38.1,204.14,113.62,822,0.875,late,True,719,81692,980304
+P036,Bupa Dental Care Cricklewood,Cricklewood,A03,London North,London,0.343,0.657,30.31,207.44,146.73,787,0.888,early,True,698,102418,1229016
+P037,Bupa Dental Care East Finchley,East Finchley,A03,London North,London,0.54,0.46,30.57,237.54,125.74,881,0.855,early,True,753,94683,1136196
+P038,Bupa Dental Care Finsbury Park,Finsbury Park,A03,London North,London,0.562,0.438,33.85,190.7,102.58,937,0.87,early,True,814,83500,1002000
+P039,Bupa Dental Care Golders Green,Golders Green,A03,London North,London,0.522,0.478,33.1,282.46,152.4,659,0.894,late,True,589,89764,1077168
+P040,Bupa Dental Care Hampstead,Hampstead,A03,London North,London,0.436,0.564,32.38,260.15,160.77,725,0.898,mixed,True,651,104660,1255920
+P041,Bupa Dental Care Hendon,Hendon,A03,London North,London,0.566,0.434,37.94,228.86,120.71,749,0.897,early,True,671,80999,971988
+P042,Bupa Dental Care Highbury,Highbury,A03,London North,London,0.525,0.475,32.42,203.26,113.61,735,0.876,mixed,True,643,73050,876600
+P043,Bupa Dental Care Highgate,Highgate,A03,London North,London,0.536,0.464,31.69,255.47,135.62,738,0.86,early,True,634,85983,1031796
+P044,Bupa Dental Care Holloway,Holloway,A03,London North,London,0.449,0.551,45.58,216.76,139.82,914,0.902,mixed,True,824,115215,1382580
+P045,Bupa Dental Care Islington,Islington,A03,London North,London,0.632,0.368,45.01,281.42,131.94,688,0.901,early,True,619,81670,980040
+P046,Bupa Dental Care Kentish Town,Kentish Town,A03,London North,London,0.448,0.552,45.82,251.77,159.47,665,0.844,late,True,561,89465,1073580
+P047,Bupa Dental Care Stoke Newington,Stoke Newington,A03,London North,London,0.491,0.509,37.56,181.52,110.89,785,0.844,mixed,True,662,73412,880944
+P048,Bupa Dental Care Tufnell Park,Tufnell Park,A03,London North,London,0.593,0.407,30.65,281.46,132.78,795,0.831,mixed,True,661,87765,1053180
+P049,Bupa Dental Care Balham,Balham,A04,London South,London,0.579,0.421,42.77,250.47,130.27,755,0.878,late,False,662,86236,1034832
+P050,Bupa Dental Care Brixton,Brixton,A04,London South,London,0.502,0.498,45.92,219.99,132.55,628,0.849,late,False,533,70647,847764
+P051,Bupa Dental Care Camberwell,Camberwell,A04,London South,London,0.687,0.313,32.09,246.96,99.37,819,0.826,mixed,False,676,67176,806112
+P052,Bupa Dental Care Clapham,Clapham,A04,London South,London,0.681,0.319,41.73,218.14,97.98,821,0.821,late,False,673,65942,791304
+P053,Bupa Dental Care Crystal Palace,Crystal Palace,A04,London South,London,0.606,0.394,39.66,199.36,102.53,656,0.896,early,False,587,60184,722208
+P054,Bupa Dental Care Dulwich,Dulwich,A04,London South,London,0.505,0.495,44.98,234.27,138.7,744,0.889,mixed,False,661,91681,1100172
+P055,Bupa Dental Care Elephant & Castle,Elephant & Castle,A04,London South,London,0.528,0.472,44.24,191.62,113.81,826,0.887,late,False,732,83309,999708
+P056,Bupa Dental Care Kennington,Kennington,A04,London South,London,0.661,0.339,38.75,251.27,110.69,814,0.898,mixed,False,731,80917,971004
+P057,Bupa Dental Care Norwood,Norwood,A04,London South,London,0.6,0.4,40.87,168.39,91.84,637,0.913,late,False,581,53359,640308
+P058,Bupa Dental Care Peckham,Peckham,A04,London South,London,0.633,0.367,39.65,251.89,117.46,635,0.856,late,False,543,63782,765384
+P059,Bupa Dental Care Stockwell,Stockwell,A04,London South,London,0.528,0.472,44.31,264.11,148.03,639,0.86,late,False,549,81269,975228
+P060,Bupa Dental Care Streatham,Streatham,A04,London South,London,0.745,0.255,42.15,227.06,89.29,629,0.853,mixed,False,536,47857,574284
+P061,Bupa Dental Care Thornton Heath,Thornton Heath,A04,London South,London,0.651,0.349,37.94,201.86,95.2,614,0.871,mixed,False,534,50835,610020
+P062,Bupa Dental Care Tooting,Tooting,A04,London South,London,0.656,0.344,44.05,226.61,106.8,719,0.898,early,False,645,68888,826656
+P063,Bupa Dental Care Tulse Hill,Tulse Hill,A04,London South,London,0.734,0.266,40.38,189.41,80.04,633,0.89,mixed,False,563,45061,540732
+P064,Bupa Dental Care West Norwood,West Norwood,A04,London South,London,0.652,0.348,40.46,250.02,113.39,710,0.894,early,False,634,71889,862668
+P065,Bupa Dental Care Aldwych,Aldwych,A05,London Central,London,0.423,0.577,31.02,351.01,215.64,849,0.899,mixed,True,762,164313,1971756
+P066,Bupa Dental Care Bank,Bank,A05,London Central,London,0.463,0.537,38.35,346.35,203.85,786,0.904,late,True,710,144735,1736820
+P067,Bupa Dental Care Barbican,Barbican,A05,London Central,London,0.308,0.692,41.07,255.76,189.56,981,0.91,early,True,892,169086,2029032
+P068,Bupa Dental Care Blackfriars,Blackfriars,A05,London Central,London,0.204,0.796,41.56,325.14,267.41,806,0.913,mixed,True,735,196549,2358588
+P069,Bupa Dental Care Clerkenwell,Clerkenwell,A05,London Central,London,0.235,0.765,45.34,290.39,232.91,761,0.889,early,True,676,157449,1889388
+P070,Bupa Dental Care Covent Garden,Covent Garden,A05,London Central,London,0.34,0.66,32.08,227.45,161.09,886,0.905,mixed,True,801,129030,1548360
+P071,Bupa Dental Care Holborn,Holborn,A05,London Central,London,0.393,0.607,45.59,234.75,160.49,763,0.901,mixed,True,687,110253,1323036
+P072,Bupa Dental Care Liverpool Street,Liverpool Street,A05,London Central,London,0.355,0.645,33.46,330.45,225.15,922,0.917,mixed,True,845,190248,2282976
+P073,Bupa Dental Care Mayfair,Mayfair,A05,London Central,London,0.399,0.601,38.09,246.19,163.17,811,0.837,late,True,679,110795,1329540
+P074,Bupa Dental Care Moorgate,Moorgate,A05,London Central,London,0.398,0.602,43.67,299.58,197.63,945,0.903,early,True,852,168380,2020560
+P075,Bupa Dental Care Piccadilly,Piccadilly,A05,London Central,London,0.474,0.526,32.73,228.69,135.86,848,0.825,mixed,True,699,94965,1139580
+P076,Bupa Dental Care Soho,Soho,A05,London Central,London,0.516,0.484,40.45,253.62,143.58,727,0.905,late,True,657,94329,1131948
+P077,Bupa Dental Care St James's,St James's,A05,London Central,London,0.338,0.662,36.88,351.97,245.57,913,0.837,mixed,True,764,187613,2251356
+P078,Bupa Dental Care Temple,Temple,A05,London Central,London,0.258,0.742,42.7,228.89,180.87,885,0.863,early,True,763,138000,1656000
+P079,Bupa Dental Care Victoria,Victoria,A05,London Central,London,0.518,0.482,31.1,288.32,155.11,718,0.897,early,True,644,99890,1198680
+P080,Bupa Dental Care Westminster,Westminster,A05,London Central,London,0.211,0.789,44.3,325.34,266.12,821,0.844,early,True,692,184151,2209812
+P081,Bupa Dental Care Brighton,Brighton,A06,South East,South East,0.364,0.636,42.88,198.92,142.11,748,0.88,early,False,658,93506,1122072
+P082,Bupa Dental Care Burgess Hill,Burgess Hill,A06,South East,South East,0.378,0.622,35.4,306.93,204.22,807,0.848,early,False,684,139685,1676220
+P083,Bupa Dental Care Crawley,Crawley,A06,South East,South East,0.549,0.451,38.11,276.2,145.43,744,0.867,mixed,False,644,93655,1123860
+P084,Bupa Dental Care Eastbourne,Eastbourne,A06,South East,South East,0.281,0.719,44.86,235.82,182.2,725,0.823,mixed,False,596,108589,1303068
+P085,Bupa Dental Care Epsom,Epsom,A06,South East,South East,0.405,0.595,40.95,311.16,201.77,736,0.876,early,False,644,129936,1559232
+P086,Bupa Dental Care Guildford,Guildford,A06,South East,South East,0.541,0.459,32.13,275.48,143.83,812,0.887,early,False,719,103413,1240956
+P087,Bupa Dental Care Hastings,Hastings,A06,South East,South East,0.531,0.469,35.4,316.29,167.18,814,0.822,early,False,669,111840,1342080
+P088,Bupa Dental Care Horsham,Horsham,A06,South East,South East,0.569,0.431,35.41,208.74,110.08,830,0.888,early,False,736,81015,972180
+P089,Bupa Dental Care Hove,Hove,A06,South East,South East,0.517,0.483,30.21,221.92,122.75,884,0.833,mixed,False,736,90347,1084164
+P090,Bupa Dental Care Lewes,Lewes,A06,South East,South East,0.35,0.65,30.82,244.51,169.8,726,0.915,late,False,664,112750,1353000
+P091,Bupa Dental Care Redhill,Redhill,A06,South East,South East,0.461,0.539,33.32,269.58,160.65,694,0.868,late,False,602,96712,1160544
+P092,Bupa Dental Care Reigate,Reigate,A06,South East,South East,0.471,0.529,37.55,265.06,157.88,694,0.842,early,False,584,92202,1106424
+P093,Bupa Dental Care Sutton,Sutton,A06,South East,South East,0.485,0.515,34.73,225.76,133.04,691,0.838,early,False,579,77030,924360
+P094,Bupa Dental Care Woking,Woking,A06,South East,South East,0.417,0.583,45.62,277.22,180.69,800,0.859,mixed,False,686,123956,1487472
+P095,Bupa Dental Care Worthing,Worthing,A06,South East,South East,0.359,0.641,33.9,232.4,161.17,677,0.9,late,False,609,98153,1177836
+P096,Bupa Dental Care Ashford,Ashford,A07,Kent & Sussex,South East,0.549,0.451,31.8,225.34,119.15,805,0.853,early,False,686,81739,980868
+P097,Bupa Dental Care Canterbury,Canterbury,A07,Kent & Sussex,South East,0.589,0.411,37.66,280.31,137.37,665,0.82,late,False,545,74864,898368
+P098,Bupa Dental Care Deal,Deal,A07,Kent & Sussex,South East,0.46,0.54,30.01,213.25,128.92,840,0.834,mixed,False,700,90245,1082940
+P099,Bupa Dental Care Dover,Dover,A07,Kent & Sussex,South East,0.64,0.36,31.89,224.58,101.3,810,0.858,mixed,False,694,70299,843588
+P100,Bupa Dental Care Faversham,Faversham,A07,Kent & Sussex,South East,0.612,0.388,43.18,200.69,104.24,837,0.867,mixed,False,725,75570,906840
+P101,Bupa Dental Care Folkestone,Folkestone,A07,Kent & Sussex,South East,0.45,0.55,35.02,236.4,145.74,819,0.843,mixed,False,690,100564,1206768
+P102,Bupa Dental Care Gillingham,Gillingham,A07,Kent & Sussex,South East,0.493,0.507,45.48,262.53,155.6,802,0.881,late,False,706,109852,1318224
+P103,Bupa Dental Care Herne Bay,Herne Bay,A07,Kent & Sussex,South East,0.473,0.527,32.25,210.66,126.26,753,0.824,early,False,620,78284,939408
+P104,Bupa Dental Care Maidstone,Maidstone,A07,Kent & Sussex,South East,0.364,0.636,35.55,288.88,196.71,815,0.859,early,False,699,137500,1650000
+P105,Bupa Dental Care Margate,Margate,A07,Kent & Sussex,South East,0.571,0.429,33.7,224.91,115.66,776,0.917,late,False,711,82233,986796
+P106,Bupa Dental Care Rochester,Rochester,A07,Kent & Sussex,South East,0.522,0.478,39.98,191.89,112.54,777,0.904,mixed,False,702,79001,948012
+P107,Bupa Dental Care Sevenoaks,Sevenoaks,A07,Kent & Sussex,South East,0.552,0.448,40.25,278.91,147.14,770,0.915,early,False,704,103588,1243056
+P108,Bupa Dental Care Sittingbourne,Sittingbourne,A07,Kent & Sussex,South East,0.459,0.541,45.47,260.36,161.76,685,0.906,late,False,620,100294,1203528
+P109,Bupa Dental Care Tonbridge,Tonbridge,A07,Kent & Sussex,South East,0.505,0.495,44.54,271.01,156.6,818,0.882,late,False,721,112911,1354932
+P110,Bupa Dental Care Tunbridge Wells,Tunbridge Wells,A07,Kent & Sussex,South East,0.594,0.406,39.65,203.5,106.13,650,0.83,early,False,539,57202,686424
+P111,Bupa Dental Care Barnstaple,Barnstaple,A08,South West,South West,0.496,0.504,31.7,250.39,142.01,796,0.855,early,False,680,96569,1158828
+P112,Bupa Dental Care Bideford,Bideford,A08,South West,South West,0.449,0.551,38.09,245.55,152.49,647,0.895,early,False,578,88139,1057668
+P113,Bupa Dental Care Bridgwater,Bridgwater,A08,South West,South West,0.4,0.6,44.4,229.12,155.15,658,0.884,late,False,581,90141,1081692
+P114,Bupa Dental Care Exeter,Exeter,A08,South West,South West,0.443,0.557,44.89,162.71,110.53,765,0.827,early,False,633,69967,839604
+P115,Bupa Dental Care Ilfracombe,Ilfracombe,A08,South West,South West,0.434,0.566,45.0,198.71,132.02,676,0.875,early,False,591,78020,936240
+P116,Bupa Dental Care Minehead,Minehead,A08,South West,South West,0.557,0.443,31.69,249.41,128.08,704,0.852,late,False,599,76722,920664
+P117,Bupa Dental Care Okehampton,Okehampton,A08,South West,South West,0.54,0.46,40.94,180.93,105.37,656,0.85,early,False,557,58688,704256
+P118,Bupa Dental Care Plymouth,Plymouth,A08,South West,South West,0.515,0.485,34.29,260.34,143.83,704,0.836,early,False,588,84573,1014876
+P119,Bupa Dental Care Taunton,Taunton,A08,South West,South West,0.507,0.493,31.01,227.23,127.83,635,0.837,mixed,False,531,67878,814536
+P120,Bupa Dental Care Tiverton,Tiverton,A08,South West,South West,0.474,0.526,39.41,183.18,115.01,712,0.864,early,False,615,70731,848772
+P121,Bupa Dental Care Torquay,Torquay,A08,South West,South West,0.506,0.494,45.57,160.54,102.39,608,0.909,early,False,552,56521,678252
+P122,Bupa Dental Care Truro,Truro,A08,South West,South West,0.615,0.385,40.32,161.87,87.15,799,0.874,mixed,False,698,60829,729948
+P123,Bupa Dental Care Weston-super-Mare,Weston-super-Mare,A08,South West,South West,0.543,0.457,31.55,190.16,104.0,787,0.891,late,False,701,72905,874860
+P124,Bupa Dental Care Yeovil,Yeovil,A08,South West,South West,0.489,0.511,30.56,195.55,114.85,829,0.849,early,False,703,80736,968832
+P125,Bupa Dental Care Launceston,Launceston,A08,South West,South West,0.543,0.457,41.64,172.67,101.55,594,0.848,mixed,False,503,51079,612948
+P126,Bupa Dental Care Bath,Bath,A09,Bristol & Bath,South West,0.569,0.431,38.99,200.24,108.52,876,0.853,mixed,False,747,81063,972756
+P127,Bupa Dental Care Bedminster,Bedminster,A09,Bristol & Bath,South West,0.486,0.514,32.55,222.83,130.35,828,0.842,early,False,696,90724,1088688
+P128,Bupa Dental Care Brislington,Brislington,A09,Bristol & Bath,South West,0.466,0.534,34.85,270.93,160.96,881,0.915,early,False,806,129731,1556772
+P129,Bupa Dental Care Clifton,Clifton,A09,Bristol & Bath,South West,0.33,0.67,41.92,199.93,147.85,695,0.896,late,False,622,91964,1103568
+P130,Bupa Dental Care Filton,Filton,A09,Bristol & Bath,South West,0.469,0.531,30.86,192.29,116.61,780,0.873,early,False,680,79297,951564
+P131,Bupa Dental Care Hanham,Hanham,A09,Bristol & Bath,South West,0.366,0.634,45.16,273.68,190.11,735,0.869,early,False,638,121290,1455480
+P132,Bupa Dental Care Horfield,Horfield,A09,Bristol & Bath,South West,0.518,0.482,37.19,277.32,153.04,829,0.885,late,False,733,112179,1346148
+P133,Bupa Dental Care Keynsham,Keynsham,A09,Bristol & Bath,South West,0.475,0.525,41.8,256.49,154.55,668,0.899,early,False,600,92729,1112748
+P134,Bupa Dental Care Kingswood,Kingswood,A09,Bristol & Bath,South West,0.3,0.7,30.09,188.87,141.18,867,0.884,late,False,766,108141,1297692
+P135,Bupa Dental Care Mangotsfield,Mangotsfield,A09,Bristol & Bath,South West,0.335,0.665,33.21,216.86,155.31,892,0.885,late,False,789,122541,1470492
+P136,Bupa Dental Care Nailsea,Nailsea,A09,Bristol & Bath,South West,0.594,0.406,35.74,278.79,134.48,852,0.895,late,False,762,102472,1229664
+P137,Bupa Dental Care Redland,Redland,A09,Bristol & Bath,South West,0.516,0.484,31.58,207.79,116.92,789,0.842,early,False,664,77632,931584
+P138,Bupa Dental Care Southmead,Southmead,A09,Bristol & Bath,South West,0.426,0.574,44.64,236.51,154.75,864,0.836,early,False,722,111729,1340748
+P139,Bupa Dental Care Thornbury,Thornbury,A09,Bristol & Bath,South West,0.372,0.628,33.77,294.08,197.17,854,0.9,late,False,768,151425,1817100
+P140,Bupa Dental Care Westbury-on-Trym,Westbury-on-Trym,A09,Bristol & Bath,South West,0.479,0.521,33.74,203.92,122.37,686,0.859,early,False,589,72074,864888
+P141,Bupa Dental Care Corby,Corby,A10,Midlands East,Midlands,0.594,0.406,32.76,181.56,93.15,704,0.873,early,False,614,57191,686292
+P142,Bupa Dental Care Derby,Derby,A10,Midlands East,Midlands,0.462,0.538,35.1,239.93,145.26,625,0.884,early,False,552,80181,962172
+P143,Bupa Dental Care Hinckley,Hinckley,A10,Midlands East,Midlands,0.59,0.41,34.01,223.78,111.75,716,0.881,mixed,False,630,70405,844860
+P144,Bupa Dental Care Kettering,Kettering,A10,Midlands East,Midlands,0.648,0.352,34.54,187.22,88.31,770,0.833,mixed,False,641,56606,679272
+P145,Bupa Dental Care Leicester,Leicester,A10,Midlands East,Midlands,0.656,0.344,44.53,223.63,106.12,686,0.821,mixed,False,563,59743,716916
+P146,Bupa Dental Care Loughborough,Loughborough,A10,Midlands East,Midlands,0.648,0.352,39.78,205.8,98.15,736,0.866,early,False,637,62524,750288
+P147,Bupa Dental Care Mansfield,Mansfield,A10,Midlands East,Midlands,0.549,0.451,34.28,194.4,106.56,587,0.898,early,False,527,56159,673908
+P148,Bupa Dental Care Melton Mowbray,Melton Mowbray,A10,Midlands East,Midlands,0.584,0.416,31.27,148.81,80.17,793,0.868,mixed,False,688,55160,661920
+P149,Bupa Dental Care Newark,Newark,A10,Midlands East,Midlands,0.592,0.408,45.18,168.35,95.48,694,0.881,mixed,False,611,58341,700092
+P150,Bupa Dental Care Northampton,Northampton,A10,Midlands East,Midlands,0.664,0.336,36.76,173.54,82.67,630,0.828,mixed,False,521,43070,516840
+P151,Bupa Dental Care Nottingham,Nottingham,A10,Midlands East,Midlands,0.699,0.301,36.25,185.16,81.07,600,0.875,mixed,False,525,42562,510744
+P152,Bupa Dental Care Oakham,Oakham,A10,Midlands East,Midlands,0.55,0.45,34.94,145.98,84.93,661,0.86,mixed,False,568,48239,578868
+P153,Bupa Dental Care Peterborough,Peterborough,A10,Midlands East,Midlands,0.881,0.119,41.66,179.13,57.97,680,0.892,early,False,606,35130,421560
+P154,Bupa Dental Care Rugby,Rugby,A10,Midlands East,Midlands,0.712,0.288,41.73,153.31,73.86,665,0.874,early,False,581,42910,514920
+P155,Bupa Dental Care Wellingborough,Wellingborough,A10,Midlands East,Midlands,0.666,0.334,32.52,212.37,92.59,670,0.888,mixed,False,595,55092,661104
+P156,Bupa Dental Care Aldridge,Aldridge,A11,Midlands West,Midlands,0.714,0.286,42.24,164.87,77.31,606,0.908,mixed,False,550,42520,510240
+P157,Bupa Dental Care Bilston,Bilston,A11,Midlands West,Midlands,0.676,0.324,38.68,200.58,91.09,627,0.916,mixed,False,574,52286,627432
+P158,Bupa Dental Care Brownhills,Brownhills,A11,Midlands West,Midlands,0.612,0.388,34.78,240.68,114.6,722,0.823,early,False,593,67960,815520
+P159,Bupa Dental Care Cannock,Cannock,A11,Midlands West,Midlands,0.647,0.353,32.53,193.31,89.29,788,0.911,late,False,717,64019,768228
+P160,Bupa Dental Care Dudley,Dudley,A11,Midlands West,Midlands,0.578,0.422,31.5,199.07,102.16,786,0.83,late,False,652,66606,799272
+P161,Bupa Dental Care Lichfield,Lichfield,A11,Midlands West,Midlands,0.522,0.478,31.95,198.79,111.7,588,0.92,late,False,540,60320,723840
+P162,Bupa Dental Care Oldbury,Oldbury,A11,Midlands West,Midlands,0.641,0.359,39.74,203.86,98.73,753,0.847,early,False,638,62987,755844
+P163,Bupa Dental Care Smethwick,Smethwick,A11,Midlands West,Midlands,0.675,0.325,35.54,245.67,103.78,704,0.866,late,False,609,63200,758400
+P164,Bupa Dental Care Stafford,Stafford,A11,Midlands West,Midlands,0.696,0.304,38.49,189.28,84.26,629,0.825,late,False,519,43732,524784
+P165,Bupa Dental Care Stourbridge,Stourbridge,A11,Midlands West,Midlands,0.624,0.376,34.61,159.37,81.57,793,0.86,early,False,682,55630,667560
+P166,Bupa Dental Care Sutton Coldfield,Sutton Coldfield,A11,Midlands West,Midlands,0.559,0.441,31.92,170.55,93.11,677,0.852,mixed,False,576,53632,643584
+P167,Bupa Dental Care Tamworth,Tamworth,A11,Midlands West,Midlands,0.538,0.462,41.36,215.75,121.94,583,0.893,mixed,False,520,63410,760920
+P168,Bupa Dental Care Walsall,Walsall,A11,Midlands West,Midlands,0.644,0.356,37.15,191.42,92.06,723,0.827,early,False,597,54959,659508
+P169,Bupa Dental Care West Bromwich,West Bromwich,A11,Midlands West,Midlands,0.733,0.267,37.4,242.43,92.04,762,0.854,mixed,False,650,59828,717936
+P170,Bupa Dental Care Wolverhampton,Wolverhampton,A11,Midlands West,Midlands,0.702,0.298,37.53,243.97,99.02,668,0.829,late,False,553,54759,657108
+P171,Bupa Dental Care Alcester,Alcester,A12,Midlands Central,Midlands,0.644,0.356,39.04,241.73,111.15,721,0.844,early,True,608,67580,810960
+P172,Bupa Dental Care Bewdley,Bewdley,A12,Midlands Central,Midlands,0.656,0.344,35.33,196.57,90.79,740,0.837,early,True,619,56198,674376
+P173,Bupa Dental Care Bromsgrove,Bromsgrove,A12,Midlands Central,Midlands,0.515,0.485,38.22,235.92,134.13,753,0.905,early,True,681,91340,1096080
+P174,Bupa Dental Care Coventry,Coventry,A12,Midlands Central,Midlands,0.624,0.376,42.42,235.34,114.92,594,0.887,late,True,526,60449,725388
+P175,Bupa Dental Care Evesham,Evesham,A12,Midlands Central,Midlands,0.723,0.277,43.23,196.41,85.64,680,0.875,mixed,True,594,50872,610464
+P176,Bupa Dental Care Kenilworth,Kenilworth,A12,Midlands Central,Midlands,0.602,0.398,42.65,153.24,86.69,735,0.872,mixed,True,640,55483,665796
+P177,Bupa Dental Care Kidderminster,Kidderminster,A12,Midlands Central,Midlands,0.424,0.576,45.71,192.87,130.45,700,0.832,mixed,True,582,75922,911064
+P178,Bupa Dental Care Leamington Spa,Leamington Spa,A12,Midlands Central,Midlands,0.554,0.446,42.35,188.7,107.66,801,0.906,early,True,725,78056,936672
+P179,Bupa Dental Care Nuneaton,Nuneaton,A12,Midlands Central,Midlands,0.493,0.507,36.26,179.39,108.77,707,0.826,mixed,True,584,63522,762264
+P180,Bupa Dental Care Pershore,Pershore,A12,Midlands Central,Midlands,0.67,0.33,33.59,162.29,76.04,810,0.912,early,True,739,56196,674352
+P181,Bupa Dental Care Redditch,Redditch,A12,Midlands Central,Midlands,0.78,0.22,43.27,198.38,77.47,726,0.831,late,True,603,46712,560544
+P182,Bupa Dental Care Stratford-upon-Avon,Stratford-upon-Avon,A12,Midlands Central,Midlands,0.611,0.389,42.4,235.98,117.8,716,0.894,mixed,True,639,75274,903288
+P183,Bupa Dental Care Stourport,Stourport,A12,Midlands Central,Midlands,0.817,0.183,34.59,190.35,63.11,636,0.886,late,True,563,35532,426384
+P184,Bupa Dental Care Warwick,Warwick,A12,Midlands Central,Midlands,0.587,0.413,41.38,182.89,99.88,678,0.912,late,True,618,61727,740724
+P185,Bupa Dental Care Worcester,Worcester,A12,Midlands Central,Midlands,0.549,0.451,41.46,166.15,97.7,581,0.913,late,True,530,51783,621396
+P186,Bupa Dental Care Birkenhead,Birkenhead,A13,North West,North West,0.788,0.212,34.97,197.35,69.38,586,0.88,mixed,False,515,35732,428784
+P187,Bupa Dental Care Bootle,Bootle,A13,North West,North West,0.77,0.23,43.54,147.92,67.56,729,0.873,mixed,False,636,42968,515616
+P188,Bupa Dental Care Crosby,Crosby,A13,North West,North West,0.642,0.358,32.86,207.56,95.41,750,0.85,early,False,637,60775,729300
+P189,Bupa Dental Care Formby,Formby,A13,North West,North West,0.641,0.359,35.62,160.76,80.61,577,0.891,mixed,False,514,41433,497196
+P190,Bupa Dental Care Huyton,Huyton,A13,North West,North West,0.727,0.273,43.16,163.64,76.08,592,0.899,late,False,532,40472,485664
+P191,Bupa Dental Care Leigh,Leigh,A13,North West,North West,0.556,0.444,32.67,174.07,95.39,665,0.85,early,False,565,53894,646728
+P192,Bupa Dental Care Liverpool,Liverpool,A13,North West,North West,0.563,0.437,35.68,142.78,82.51,549,0.858,late,False,471,38860,466320
+P193,Bupa Dental Care Prescot,Prescot,A13,North West,North West,0.636,0.364,41.17,194.32,96.94,742,0.844,mixed,False,626,60685,728220
+P194,Bupa Dental Care Runcorn,Runcorn,A13,North West,North West,0.721,0.279,43.42,190.43,84.47,551,0.873,mixed,False,481,40630,487560
+P195,Bupa Dental Care St Helens,St Helens,A13,North West,North West,0.698,0.302,33.29,204.93,85.17,652,0.867,mixed,False,565,48119,577428
+P196,Bupa Dental Care Skelmersdale,Skelmersdale,A13,North West,North West,0.749,0.251,41.19,222.19,86.59,714,0.914,early,False,652,56458,677496
+P197,Bupa Dental Care Southport,Southport,A13,North West,North West,0.536,0.464,38.88,153.58,92.11,676,0.885,mixed,False,598,55080,660960
+P198,Bupa Dental Care Wallasey,Wallasey,A13,North West,North West,0.8,0.2,42.47,189.78,71.98,641,0.847,early,False,542,39011,468132
+P199,Bupa Dental Care Warrington,Warrington,A13,North West,North West,0.757,0.243,42.56,154.7,69.84,671,0.867,early,False,581,40575,486900
+P200,Bupa Dental Care Widnes,Widnes,A13,North West,North West,0.716,0.284,43.42,224.79,94.92,688,0.828,mixed,False,569,54010,648120
+P201,Bupa Dental Care Altrincham,Altrincham,A14,Manchester & Cheshire,North West,0.706,0.294,36.26,227.65,92.62,703,0.878,mixed,True,617,57147,685764
+P202,Bupa Dental Care Cheadle,Cheadle,A14,Manchester & Cheshire,North West,0.751,0.249,35.1,215.6,79.98,770,0.879,mixed,True,676,54065,648780
+P203,Bupa Dental Care Chester,Chester,A14,Manchester & Cheshire,North West,0.676,0.324,41.66,235.85,104.64,679,0.821,early,True,557,58286,699432
+P204,Bupa Dental Care Crewe,Crewe,A14,Manchester & Cheshire,North West,0.729,0.271,42.03,193.85,83.13,706,0.919,early,True,648,53870,646440
+P205,Bupa Dental Care Didsbury,Didsbury,A14,Manchester & Cheshire,North West,0.53,0.47,40.7,217.95,123.95,586,0.919,mixed,True,538,66686,800232
+P206,Bupa Dental Care Knutsford,Knutsford,A14,Manchester & Cheshire,North West,0.642,0.358,40.79,184.06,92.12,623,0.907,mixed,True,565,52050,624600
+P207,Bupa Dental Care Macclesfield,Macclesfield,A14,Manchester & Cheshire,North West,0.694,0.306,44.25,240.67,104.42,716,0.882,early,True,631,65891,790692
+P208,Bupa Dental Care Manchester,Manchester,A14,Manchester & Cheshire,North West,0.594,0.406,40.88,210.24,109.58,698,0.902,early,True,629,68923,827076
+P209,Bupa Dental Care Nantwich,Nantwich,A14,Manchester & Cheshire,North West,0.648,0.352,38.51,191.31,92.29,667,0.828,late,True,552,50946,611352
+P210,Bupa Dental Care Northwich,Northwich,A14,Manchester & Cheshire,North West,0.651,0.349,42.44,181.92,91.12,637,0.858,late,True,546,49753,597036
+P211,Bupa Dental Care Sale,Sale,A14,Manchester & Cheshire,North West,0.69,0.31,33.8,172.58,76.84,787,0.903,mixed,True,710,54557,654684
+P212,Bupa Dental Care Salford,Salford,A14,Manchester & Cheshire,North West,0.694,0.306,45.58,234.23,103.29,613,0.89,late,True,545,56292,675504
+P213,Bupa Dental Care Stockport,Stockport,A14,Manchester & Cheshire,North West,0.593,0.407,34.05,223.99,111.34,736,0.853,mixed,True,627,69807,837684
+P214,Bupa Dental Care Stretford,Stretford,A14,Manchester & Cheshire,North West,0.49,0.51,39.33,218.25,130.51,586,0.891,early,True,522,68125,817500
+P215,Bupa Dental Care Wilmslow,Wilmslow,A14,Manchester & Cheshire,North West,0.609,0.391,39.02,164.85,88.23,752,0.911,mixed,True,685,60437,725244
+P216,Bupa Dental Care Birtley,Birtley,A15,North East,North East,0.747,0.253,33.43,134.53,59.01,540,0.867,mixed,False,468,27616,331392
+P217,Bupa Dental Care Chester-le-Street,Chester-le-Street,A15,North East,North East,0.723,0.277,42.98,205.31,87.87,555,0.917,mixed,False,508,44638,535656
+P218,Bupa Dental Care Consett,Consett,A15,North East,North East,0.744,0.256,33.12,142.56,61.15,583,0.824,late,False,480,29350,352200
+P219,Bupa Dental Care Darlington,Darlington,A15,North East,North East,0.591,0.409,41.32,187.11,100.9,605,0.854,mixed,False,516,52062,624744
+P220,Bupa Dental Care Durham,Durham,A15,North East,North East,0.843,0.157,43.9,153.66,61.13,721,0.83,early,False,598,36553,438636
+P221,Bupa Dental Care Gateshead,Gateshead,A15,North East,North East,0.812,0.188,34.11,143.42,54.64,597,0.903,mixed,False,539,29449,353388
+P222,Bupa Dental Care Hartlepool,Hartlepool,A15,North East,North East,0.735,0.265,40.59,155.37,71.05,613,0.911,late,False,558,39648,475776
+P223,Bupa Dental Care Houghton-le-Spring,Houghton-le-Spring,A15,North East,North East,0.759,0.241,44.25,179.75,76.87,556,0.834,mixed,False,463,35590,427080
+P224,Bupa Dental Care Jarrow,Jarrow,A15,North East,North East,0.714,0.286,36.5,142.68,66.89,517,0.895,mixed,False,462,30903,370836
+P225,Bupa Dental Care Middlesbrough,Middlesbrough,A15,North East,North East,0.733,0.267,33.38,175.22,71.29,715,0.89,late,False,636,45339,544068
+P226,Bupa Dental Care Newcastle,Newcastle,A15,North East,North East,0.801,0.199,45.78,195.5,75.6,650,0.832,early,False,540,40822,489864
+P227,Bupa Dental Care Peterlee,Peterlee,A15,North East,North East,0.593,0.407,35.21,148.91,81.52,675,0.887,early,False,598,48747,584964
+P228,Bupa Dental Care South Shields,South Shields,A15,North East,North East,0.605,0.395,41.24,210.96,108.31,528,0.884,mixed,False,466,50474,605688
+P229,Bupa Dental Care Sunderland,Sunderland,A15,North East,North East,0.809,0.191,33.93,204.28,66.54,618,0.824,early,False,509,33869,406428
+P230,Bupa Dental Care Washington,Washington,A15,North East,North East,0.677,0.323,42.35,203.73,94.42,530,0.843,early,False,446,42113,505356
+P231,Bupa Dental Care Filey,Filey,A16,Yorkshire North,Yorkshire,0.715,0.285,37.2,205.59,85.25,558,0.891,late,False,497,42368,508416
+P232,Bupa Dental Care Harrogate,Harrogate,A16,Yorkshire North,Yorkshire,0.577,0.423,42.2,160.01,92.03,588,0.873,late,False,513,47210,566520
+P233,Bupa Dental Care Helmsley,Helmsley,A16,Yorkshire North,Yorkshire,0.642,0.358,32.13,200.18,92.32,609,0.905,mixed,False,551,50869,610428
+P234,Bupa Dental Care Malton,Malton,A16,Yorkshire North,Yorkshire,0.349,0.651,39.94,136.33,102.67,723,0.905,mixed,False,654,67145,805740
+P235,Bupa Dental Care Northallerton,Northallerton,A16,Yorkshire North,Yorkshire,0.628,0.372,34.06,217.32,102.24,647,0.825,early,False,533,54494,653928
+P236,Bupa Dental Care Pickering,Pickering,A16,Yorkshire North,Yorkshire,0.716,0.284,45.0,148.02,74.3,559,0.859,late,False,479,35590,427080
+P237,Bupa Dental Care Ripon,Ripon,A16,Yorkshire North,Yorkshire,0.747,0.253,42.51,169.22,74.56,580,0.89,late,False,515,38398,460776
+P238,Bupa Dental Care Scarborough,Scarborough,A16,Yorkshire North,Yorkshire,0.765,0.235,36.14,161.13,65.45,650,0.828,mixed,False,537,35148,421776
+P239,Bupa Dental Care Selby,Selby,A16,Yorkshire North,Yorkshire,0.616,0.384,40.14,160.03,86.17,684,0.821,early,False,561,48339,580068
+P240,Bupa Dental Care Skipton,Skipton,A16,Yorkshire North,Yorkshire,0.699,0.301,33.55,206.74,85.75,629,0.829,mixed,False,521,44675,536100
+P241,Bupa Dental Care Tadcaster,Tadcaster,A16,Yorkshire North,Yorkshire,0.651,0.349,42.57,203.94,98.84,678,0.883,late,False,598,59105,709260
+P242,Bupa Dental Care Thirsk,Thirsk,A16,Yorkshire North,Yorkshire,0.612,0.388,43.17,157.59,87.57,554,0.838,early,False,464,40630,487560
+P243,Bupa Dental Care Whitby,Whitby,A16,Yorkshire North,Yorkshire,0.471,0.529,39.9,177.5,112.75,578,0.829,early,False,479,54007,648084
+P244,Bupa Dental Care York,York,A16,Yorkshire North,Yorkshire,0.679,0.321,31.13,173.42,76.74,611,0.888,late,False,542,41594,499128
+P245,Bupa Dental Care Easingwold,Easingwold,A16,Yorkshire North,Yorkshire,0.639,0.361,33.93,180.57,86.83,680,0.908,early,False,617,53575,642900
+P246,Bupa Dental Care Barnsley,Barnsley,A17,Yorkshire South,Yorkshire,0.72,0.28,35.58,178.44,75.63,719,0.835,early,False,600,45376,544512
+P247,Bupa Dental Care Conisbrough,Conisbrough,A17,Yorkshire South,Yorkshire,0.754,0.246,43.4,153.16,70.35,701,0.824,mixed,False,577,40593,487116
+P248,Bupa Dental Care Doncaster,Doncaster,A17,Yorkshire South,Yorkshire,0.684,0.316,35.25,143.04,69.29,618,0.867,early,False,535,37071,444852
+P249,Bupa Dental Care Hoyland,Hoyland,A17,Yorkshire South,Yorkshire,0.732,0.268,32.68,214.33,81.38,624,0.891,early,False,555,45163,541956
+P250,Bupa Dental Care Mexborough,Mexborough,A17,Yorkshire South,Yorkshire,0.574,0.426,40.95,156.15,90.03,596,0.86,mixed,False,512,46093,553116
+P251,Bupa Dental Care Penistone,Penistone,A17,Yorkshire South,Yorkshire,0.778,0.222,45.27,215.43,83.06,692,0.857,early,False,593,49254,591048
+P252,Bupa Dental Care Rawmarsh,Rawmarsh,A17,Yorkshire South,Yorkshire,0.656,0.344,36.95,150.07,75.84,750,0.847,mixed,False,634,48081,576972
+P253,Bupa Dental Care Rotherham,Rotherham,A17,Yorkshire South,Yorkshire,0.554,0.446,42.11,178.44,102.94,623,0.888,early,False,553,56925,683100
+P254,Bupa Dental Care Sheffield Central,Sheffield Central,A17,Yorkshire South,Yorkshire,0.551,0.449,30.87,214.75,113.41,612,0.91,early,False,556,63054,756648
+P255,Bupa Dental Care Sheffield East,Sheffield East,A17,Yorkshire South,Yorkshire,0.502,0.498,38.06,151.13,94.33,604,0.823,mixed,False,497,46882,562584
+P256,Bupa Dental Care Sheffield North,Sheffield North,A17,Yorkshire South,Yorkshire,0.581,0.419,33.85,169.54,90.75,530,0.88,early,False,466,42289,507468
+P257,Bupa Dental Care Sheffield West,Sheffield West,A17,Yorkshire South,Yorkshire,0.761,0.239,32.41,218.58,76.92,774,0.845,mixed,False,653,50227,602724
+P258,Bupa Dental Care Swinton,Swinton,A17,Yorkshire South,Yorkshire,0.67,0.33,44.46,220.82,102.73,714,0.871,mixed,False,621,63792,765504
+P259,Bupa Dental Care Wath-upon-Dearne,Wath-upon-Dearne,A17,Yorkshire South,Yorkshire,0.754,0.246,35.49,154.1,64.7,707,0.838,late,False,592,38300,459600
+P260,Bupa Dental Care Worksop,Worksop,A17,Yorkshire South,Yorkshire,0.673,0.327,39.78,223.26,99.76,701,0.852,early,False,597,59557,714684
+P261,Bupa Dental Care Bury St Edmunds,Bury St Edmunds,A18,East Anglia,East,0.507,0.493,32.74,266.21,147.79,622,0.864,mixed,False,537,79360,952320
+P262,Bupa Dental Care Cambridge,Cambridge,A18,East Anglia,East,0.423,0.577,37.05,217.14,141.0,670,0.852,mixed,False,571,80509,966108
+P263,Bupa Dental Care Dereham,Dereham,A18,East Anglia,East,0.533,0.467,30.84,192.26,106.25,610,0.838,mixed,False,511,54294,651528
+P264,Bupa Dental Care Ely,Ely,A18,East Anglia,East,0.352,0.648,31.58,164.66,117.84,724,0.895,mixed,False,648,76357,916284
+P265,Bupa Dental Care Fakenham,Fakenham,A18,East Anglia,East,0.44,0.56,33.06,254.19,156.97,722,0.85,late,False,613,96220,1154640
+P266,Bupa Dental Care Great Yarmouth,Great Yarmouth,A18,East Anglia,East,0.58,0.42,44.8,253.25,132.38,643,0.838,mixed,False,538,71218,854616
+P267,Bupa Dental Care Huntingdon,Huntingdon,A18,East Anglia,East,0.596,0.404,33.77,262.87,126.36,617,0.919,mixed,False,566,71517,858204
+P268,Bupa Dental Care Ipswich,Ipswich,A18,East Anglia,East,0.389,0.611,40.35,189.91,131.79,807,0.918,late,False,740,97528,1170336
+P269,Bupa Dental Care Kings Lynn,Kings Lynn,A18,East Anglia,East,0.514,0.486,33.77,221.33,124.99,593,0.892,early,False,528,65993,791916
+P270,Bupa Dental Care Lowestoft,Lowestoft,A18,East Anglia,East,0.547,0.453,35.27,222.86,120.29,620,0.885,late,False,548,65917,791004
+P271,Bupa Dental Care Newmarket,Newmarket,A18,East Anglia,East,0.667,0.333,31.27,214.35,92.18,596,0.851,mixed,False,507,46734,560808
+P272,Bupa Dental Care Norwich,Norwich,A18,East Anglia,East,0.352,0.648,36.26,265.59,184.94,670,0.869,early,False,582,107632,1291584
+P273,Bupa Dental Care Peterborough,Peterborough,A18,East Anglia,East,0.444,0.556,33.86,214.73,134.44,652,0.906,early,False,590,79321,951852
+P274,Bupa Dental Care Thetford,Thetford,A18,East Anglia,East,0.35,0.65,34.03,201.23,142.67,690,0.858,early,False,592,84459,1013508
+P275,Bupa Dental Care Wisbech,Wisbech,A18,East Anglia,East,0.525,0.475,39.7,199.53,115.6,589,0.914,early,False,538,62191,746292
+P276,Bupa Dental Care Arnold,Arnold,A19,East Midlands,East,0.761,0.239,40.3,209.22,80.76,561,0.854,mixed,False,478,38601,463212
+P277,Bupa Dental Care Beeston,Beeston,A19,East Midlands,East,0.711,0.289,35.45,186.58,79.14,702,0.915,mixed,False,642,50808,609696
+P278,Bupa Dental Care Bingham,Bingham,A19,East Midlands,East,0.621,0.379,35.1,247.67,115.56,751,0.906,early,False,680,78581,942972
+P279,Bupa Dental Care Clifton,Clifton,A19,East Midlands,East,0.671,0.329,34.83,190.92,86.26,725,0.832,late,False,603,52014,624168
+P280,Bupa Dental Care Gedling,Gedling,A19,East Midlands,East,0.748,0.252,38.5,162.01,69.62,630,0.899,early,False,566,39402,472824
+P281,Bupa Dental Care Hucknall,Hucknall,A19,East Midlands,East,0.692,0.308,44.33,224.18,99.81,562,0.88,early,False,494,49305,591660
+P282,Bupa Dental Care Ilkeston,Ilkeston,A19,East Midlands,East,0.541,0.459,44.68,155.1,95.4,759,0.854,early,False,648,61816,741792
+P283,Bupa Dental Care Long Eaton,Long Eaton,A19,East Midlands,East,0.577,0.423,35.68,149.95,84.04,801,0.87,mixed,False,696,58491,701892
+P284,Bupa Dental Care Mapperley,Mapperley,A19,East Midlands,East,0.515,0.485,31.25,166.6,96.85,582,0.887,mixed,False,516,49972,599664
+P285,Bupa Dental Care Radford,Radford,A19,East Midlands,East,0.596,0.404,38.4,218.24,111.0,567,0.889,late,False,503,55832,669984
+P286,Bupa Dental Care Sherwood,Sherwood,A19,East Midlands,East,0.568,0.432,39.09,182.56,101.01,769,0.876,early,False,673,67978,815736
+P287,Bupa Dental Care Stapleford,Stapleford,A19,East Midlands,East,0.492,0.508,38.68,169.69,105.23,654,0.909,late,False,594,62505,750060
+P288,Bupa Dental Care West Bridgford,West Bridgford,A19,East Midlands,East,0.579,0.421,37.57,231.12,118.98,607,0.843,early,False,511,60801,729612
+P289,Bupa Dental Care Kimberley,Kimberley,A19,East Midlands,East,0.668,0.332,40.86,230.07,103.75,632,0.885,mixed,False,559,57994,695928
+P290,Bupa Dental Care Bulwell,Bulwell,A19,East Midlands,East,0.598,0.402,42.31,244.56,123.55,806,0.915,late,False,737,91055,1092660
+P291,Bupa Dental Care Aberdeen,Aberdeen,A20,Scotland North,Scotland,0.605,0.395,39.76,177.45,94.08,530,0.874,early,False,463,43559,522708
+P292,Bupa Dental Care Buckie,Buckie,A20,Scotland North,Scotland,0.636,0.364,43.64,228.85,111.03,495,0.854,early,False,422,46853,562236
+P293,Bupa Dental Care Elgin,Elgin,A20,Scotland North,Scotland,0.631,0.369,36.31,151.9,78.91,704,0.835,late,False,588,46399,556788
+P294,Bupa Dental Care Fraserburgh,Fraserburgh,A20,Scotland North,Scotland,0.575,0.425,37.33,215.35,112.92,574,0.867,late,False,497,56119,673428
+P295,Bupa Dental Care Huntly,Huntly,A20,Scotland North,Scotland,0.688,0.312,41.16,186.11,86.42,716,0.822,late,False,588,50815,609780
+P296,Bupa Dental Care Inverness,Inverness,A20,Scotland North,Scotland,0.508,0.492,36.48,151.92,93.22,640,0.875,mixed,False,560,52205,626460
+P297,Bupa Dental Care Keith,Keith,A20,Scotland North,Scotland,0.502,0.498,38.54,148.56,93.38,591,0.827,late,False,488,45569,546828
+P298,Bupa Dental Care Nairn,Nairn,A20,Scotland North,Scotland,0.608,0.392,36.37,227.43,111.2,706,0.866,late,False,611,67941,815292
+P299,Bupa Dental Care Peterhead,Peterhead,A20,Scotland North,Scotland,0.501,0.499,35.8,137.58,86.63,635,0.87,late,False,552,47821,573852
+P300,Bupa Dental Care Stonehaven,Stonehaven,A20,Scotland North,Scotland,0.541,0.459,43.8,155.91,95.29,647,0.878,early,False,567,54029,648348
+P301,Bupa Dental Care Turriff,Turriff,A20,Scotland North,Scotland,0.684,0.316,30.52,142.48,65.96,563,0.914,early,False,514,33901,406812
+P302,Bupa Dental Care Fort William,Fort William,A20,Scotland North,Scotland,0.619,0.381,42.98,199.01,102.39,657,0.87,late,False,571,58461,701532
+P303,Bupa Dental Care Aviemore,Aviemore,A20,Scotland North,Scotland,0.664,0.336,33.25,142.32,69.92,498,0.919,early,False,457,31952,383424
+P304,Bupa Dental Care Dingwall,Dingwall,A20,Scotland North,Scotland,0.638,0.362,32.41,137.2,70.31,581,0.835,early,False,485,34101,409212
+P305,Bupa Dental Care Forres,Forres,A20,Scotland North,Scotland,0.639,0.361,39.33,149.75,79.17,645,0.827,mixed,False,533,42196,506352
+P306,Bupa Dental Care Ayr,Ayr,A21,Scotland Central,Scotland,0.736,0.264,36.88,184.29,75.83,702,0.846,early,False,593,44969,539628
+P307,Bupa Dental Care Clydebank,Clydebank,A21,Scotland Central,Scotland,0.596,0.404,36.42,222.76,111.75,714,0.875,early,False,624,69731,836772
+P308,Bupa Dental Care Coatbridge,Coatbridge,A21,Scotland Central,Scotland,0.656,0.344,32.05,193.4,87.52,603,0.904,late,False,545,47698,572376
+P309,Bupa Dental Care Dunfermline,Dunfermline,A21,Scotland Central,Scotland,0.449,0.551,35.38,197.71,124.87,630,0.874,early,False,550,68679,824148
+P310,Bupa Dental Care Edinburgh,Edinburgh,A21,Scotland Central,Scotland,0.613,0.387,40.0,194.78,99.87,771,0.868,mixed,False,669,66812,801744
+P311,Bupa Dental Care Falkirk,Falkirk,A21,Scotland Central,Scotland,0.572,0.428,37.98,222.64,117.05,750,0.913,early,False,684,80060,960720
+P312,Bupa Dental Care Glenrothes,Glenrothes,A21,Scotland Central,Scotland,0.454,0.546,35.74,200.05,125.48,687,0.919,mixed,False,631,79176,950112
+P313,Bupa Dental Care Glasgow,Glasgow,A21,Scotland Central,Scotland,0.614,0.386,43.51,219.82,111.5,568,0.876,late,False,497,55416,664992
+P314,Bupa Dental Care Hamilton,Hamilton,A21,Scotland Central,Scotland,0.559,0.441,36.31,219.9,117.29,721,0.855,late,False,616,72248,866976
+P315,Bupa Dental Care Kirkcaldy,Kirkcaldy,A21,Scotland Central,Scotland,0.544,0.456,43.49,217.94,123.05,521,0.866,late,False,451,55494,665928
+P316,Bupa Dental Care Livingston,Livingston,A21,Scotland Central,Scotland,0.584,0.416,32.66,209.66,106.37,707,0.849,early,False,600,63821,765852
+P317,Bupa Dental Care Motherwell,Motherwell,A21,Scotland Central,Scotland,0.643,0.357,38.49,152.24,79.09,530,0.879,mixed,False,465,36777,441324
+P318,Bupa Dental Care Paisley,Paisley,A21,Scotland Central,Scotland,0.56,0.44,38.64,213.79,115.73,534,0.867,late,False,463,53581,642972
+P319,Bupa Dental Care Perth,Perth,A21,Scotland Central,Scotland,0.567,0.433,33.37,180.24,96.95,667,0.869,early,False,579,56133,673596
+P320,Bupa Dental Care Stirling,Stirling,A21,Scotland Central,Scotland,0.59,0.41,39.43,215.47,111.69,657,0.848,mixed,False,557,62211,746532
+P321,Bupa Dental Care Bangor,Bangor,A22,Wales North,Wales,0.681,0.319,31.99,174.66,77.51,532,0.834,late,False,443,34338,412056
+P322,Bupa Dental Care Caernarfon,Caernarfon,A22,Wales North,Wales,0.673,0.327,33.36,139.99,68.28,689,0.888,mixed,False,611,41716,500592
+P323,Bupa Dental Care Colwyn Bay,Colwyn Bay,A22,Wales North,Wales,0.598,0.402,45.44,178.31,98.89,629,0.831,mixed,False,522,51620,619440
+P324,Bupa Dental Care Conwy,Conwy,A22,Wales North,Wales,0.634,0.366,34.09,192.13,91.91,541,0.896,mixed,False,484,44485,533820
+P325,Bupa Dental Care Denbigh,Denbigh,A22,Wales North,Wales,0.724,0.276,30.28,196.51,76.09,489,0.867,late,False,424,32261,387132
+P326,Bupa Dental Care Flint,Flint,A22,Wales North,Wales,0.86,0.14,34.76,179.44,55.08,502,0.859,early,False,431,23740,284880
+P327,Bupa Dental Care Holyhead,Holyhead,A22,Wales North,Wales,0.733,0.267,32.82,181.71,72.63,501,0.849,mixed,False,425,30866,370392
+P328,Bupa Dental Care Llandudno,Llandudno,A22,Wales North,Wales,0.58,0.42,31.55,148.76,80.83,604,0.889,early,False,537,43403,520836
+P329,Bupa Dental Care Llangefni,Llangefni,A22,Wales North,Wales,0.7,0.3,40.61,187.29,84.61,690,0.862,mixed,False,594,50259,603108
+P330,Bupa Dental Care Mold,Mold,A22,Wales North,Wales,0.748,0.252,30.26,177.5,67.33,586,0.862,mixed,False,504,33932,407184
+P331,Bupa Dental Care Pwllheli,Pwllheli,A22,Wales North,Wales,0.62,0.38,31.97,212.97,100.68,553,0.917,early,False,507,51046,612552
+P332,Bupa Dental Care Rhyl,Rhyl,A22,Wales North,Wales,0.804,0.196,40.92,162.57,64.81,575,0.827,mixed,False,475,30786,369432
+P333,Bupa Dental Care Ruthin,Ruthin,A22,Wales North,Wales,0.666,0.334,38.08,146.68,74.36,482,0.823,early,False,396,29446,353352
+P334,Bupa Dental Care Wrexham,Wrexham,A22,Wales North,Wales,0.803,0.197,32.58,164.02,58.48,693,0.822,late,False,569,33274,399288
+P335,Bupa Dental Care Abergele,Abergele,A22,Wales North,Wales,0.838,0.162,45.23,214.45,72.67,614,0.864,mixed,False,530,38513,462156
+P336,Bupa Dental Care Aberdare,Aberdare,A23,Wales South,Wales,0.678,0.322,36.33,179.8,82.52,576,0.834,late,False,480,39611,475332
+P337,Bupa Dental Care Barry,Barry,A23,Wales South,Wales,0.625,0.375,43.27,183.16,95.71,543,0.828,late,False,449,42974,515688
+P338,Bupa Dental Care Bridgend,Bridgend,A23,Wales South,Wales,0.763,0.237,30.84,156.11,60.52,506,0.866,early,False,438,26508,318096
+P339,Bupa Dental Care Cardiff Central,Cardiff Central,A23,Wales South,Wales,0.741,0.259,32.6,182.9,71.48,560,0.916,mixed,False,512,36598,439176
+P340,Bupa Dental Care Cardiff North,Cardiff North,A23,Wales South,Wales,0.686,0.314,31.71,183.01,79.16,686,0.823,mixed,False,564,44644,535728
+P341,Bupa Dental Care Cwmbran,Cwmbran,A23,Wales South,Wales,0.62,0.38,38.07,206.98,102.17,563,0.877,late,False,493,50371,604452
+P342,Bupa Dental Care Ebbw Vale,Ebbw Vale,A23,Wales South,Wales,0.757,0.243,41.01,222.19,85.11,538,0.826,late,False,444,37789,453468
+P343,Bupa Dental Care Maesteg,Maesteg,A23,Wales South,Wales,0.771,0.229,35.68,219.91,77.91,600,0.883,late,False,529,41214,494568
+P344,Bupa Dental Care Merthyr Tydfil,Merthyr Tydfil,A23,Wales South,Wales,0.576,0.424,43.36,160.44,93.06,507,0.905,mixed,False,458,42619,511428
+P345,Bupa Dental Care Neath,Neath,A23,Wales South,Wales,0.849,0.151,31.65,215.38,59.42,669,0.888,mixed,False,593,35238,422856
+P346,Bupa Dental Care Newport,Newport,A23,Wales South,Wales,0.689,0.311,34.69,137.38,66.64,506,0.911,early,False,460,30654,367848
+P347,Bupa Dental Care Pontypridd,Pontypridd,A23,Wales South,Wales,0.603,0.397,34.29,162.97,85.41,695,0.827,early,False,574,49022,588264
+P348,Bupa Dental Care Port Talbot,Port Talbot,A23,Wales South,Wales,0.816,0.184,38.42,155.89,60.05,509,0.851,early,False,433,26001,312012
+P349,Bupa Dental Care Swansea,Swansea,A23,Wales South,Wales,0.513,0.487,42.96,155.03,97.57,495,0.84,mixed,False,415,40493,485916
+P350,Bupa Dental Care Llantrisant,Llantrisant,A23,Wales South,Wales,0.737,0.263,34.23,201.21,78.19,708,0.846,early,False,599,46832,561984
+P351,Bupa Dental Care Belfast Central,Belfast Central,A24,Northern Ireland,N. Ireland,0.717,0.283,39.96,180.5,79.77,713,0.892,early,False,636,50733,608796
+P352,Bupa Dental Care Belfast East,Belfast East,A24,Northern Ireland,N. Ireland,0.621,0.379,41.31,142.58,79.68,508,0.912,late,False,463,36891,442692
+P353,Bupa Dental Care Belfast North,Belfast North,A24,Northern Ireland,N. Ireland,0.597,0.403,36.22,168.03,89.36,561,0.84,early,False,471,42088,505056
+P354,Bupa Dental Care Belfast South,Belfast South,A24,Northern Ireland,N. Ireland,0.613,0.387,32.22,172.78,86.67,535,0.88,mixed,False,470,40732,488784
+P355,Bupa Dental Care Belfast West,Belfast West,A24,Northern Ireland,N. Ireland,0.674,0.326,40.58,220.04,99.1,608,0.888,late,False,539,53413,640956
+P356,Bupa Dental Care Bangor,Bangor,A24,Northern Ireland,N. Ireland,0.639,0.361,40.12,170.42,87.16,556,0.896,mixed,False,497,43316,519792
+P357,Bupa Dental Care Coleraine,Coleraine,A24,Northern Ireland,N. Ireland,0.655,0.345,45.85,196.79,97.9,713,0.874,late,False,623,60990,731880
+P358,Bupa Dental Care Derry,Derry,A24,Northern Ireland,N. Ireland,0.576,0.424,45.83,158.75,93.68,684,0.874,early,False,597,55928,671136
+P359,Bupa Dental Care Dungannon,Dungannon,A24,Northern Ireland,N. Ireland,0.679,0.321,31.92,151.27,70.21,715,0.894,late,False,639,44862,538344
+P360,Bupa Dental Care Enniskillen,Enniskillen,A24,Northern Ireland,N. Ireland,0.61,0.39,39.27,149.09,82.06,726,0.848,early,False,615,50467,605604
+P361,Bupa Dental Care Lisburn,Lisburn,A24,Northern Ireland,N. Ireland,0.514,0.486,43.48,205.79,122.37,575,0.901,late,False,518,63388,760656
+P362,Bupa Dental Care Newry,Newry,A24,Northern Ireland,N. Ireland,0.642,0.358,39.41,193.49,94.57,662,0.91,early,False,602,56928,683136
+P363,Bupa Dental Care Newtownabbey,Newtownabbey,A24,Northern Ireland,N. Ireland,0.556,0.444,39.18,176.03,99.92,491,0.917,mixed,False,450,44961,539532
+P364,Bupa Dental Care Newtownards,Newtownards,A24,Northern Ireland,N. Ireland,0.634,0.366,33.8,153.71,77.73,585,0.902,mixed,False,527,40964,491568
+P365,Bupa Dental Care Portadown,Portadown,A24,Northern Ireland,N. Ireland,0.687,0.313,38.75,218.43,94.94,565,0.916,late,False,517,49085,589020
+P366,Bupa Dental Care Beverley,Beverley,A25,Humber & Lincolnshire,East,0.709,0.291,42.88,241.12,100.54,705,0.833,mixed,False,587,59018,708216
+P367,Bupa Dental Care Boston,Boston,A25,Humber & Lincolnshire,East,0.576,0.424,34.95,215.95,111.64,614,0.87,mixed,False,533,59504,714048
+P368,Bupa Dental Care Brigg,Brigg,A25,Humber & Lincolnshire,East,0.586,0.414,37.43,160.28,88.25,626,0.844,mixed,False,528,46596,559152
+P369,Bupa Dental Care Cleethorpes,Cleethorpes,A25,Humber & Lincolnshire,East,0.531,0.469,32.36,175.18,99.3,622,0.856,early,False,532,52825,633900
+P370,Bupa Dental Care Gainsborough,Gainsborough,A25,Humber & Lincolnshire,East,0.691,0.309,30.75,240.45,95.64,679,0.842,early,False,571,54609,655308
+P371,Bupa Dental Care Goole,Goole,A25,Humber & Lincolnshire,East,0.58,0.42,40.53,180.48,99.34,628,0.856,mixed,False,537,53344,640128
+P372,Bupa Dental Care Grimsby,Grimsby,A25,Humber & Lincolnshire,East,0.728,0.272,30.21,216.89,81.06,588,0.851,late,False,500,40528,486336
+P373,Bupa Dental Care Hull,Hull,A25,Humber & Lincolnshire,East,0.579,0.421,31.36,190.01,98.19,739,0.898,mixed,False,663,65100,781200
+P374,Bupa Dental Care Immingham,Immingham,A25,Humber & Lincolnshire,East,0.636,0.364,39.72,201.02,98.44,740,0.89,late,False,658,64771,777252
+P375,Bupa Dental Care Lincoln,Lincoln,A25,Humber & Lincolnshire,East,0.577,0.423,44.94,163.31,95.02,711,0.836,late,False,594,56439,677268
+P376,Bupa Dental Care Louth,Louth,A25,Humber & Lincolnshire,East,0.627,0.373,43.27,219.34,108.86,643,0.847,mixed,False,544,59219,710628
+P377,Bupa Dental Care Scunthorpe,Scunthorpe,A25,Humber & Lincolnshire,East,0.563,0.437,35.82,153.94,87.39,652,0.85,mixed,False,554,48412,580944
+P378,Bupa Dental Care Spalding,Spalding,A25,Humber & Lincolnshire,East,0.588,0.412,33.46,194.08,99.6,670,0.896,mixed,False,600,59759,717108
+P379,Bupa Dental Care Stamford,Stamford,A25,Humber & Lincolnshire,East,0.534,0.466,30.04,234.28,125.23,684,0.882,late,False,603,75515,906180
+P380,Bupa Dental Care Barnetby,Barnetby,A25,Humber & Lincolnshire,East,0.647,0.353,43.15,190.82,95.25,644,0.853,early,False,549,52292,627504

@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}Areas{% endblock %}
+{% block page_title %}Area Performance Summary{% endblock %}
+
+{# ── Traffic-light icon macro (reused throughout this page) ── #}
+{% macro _tl_icon(rate, high, low) -%}
+  {%- if rate >= high -%}<i class="fas fa-check-circle text-success"></i>
+  {%- elif rate < low -%}<i class="fas fa-times-circle text-danger"></i>
+  {%- else -%}<i class="fas fa-exclamation-circle text-warning"></i>
+  {%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Area Performance Summary</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
+  Performance overview for all 25 operational areas across the UK, grouped by region.
+  Each row represents one area — click the <strong>Detail →</strong> button on the right of any row
+  to drill into that area's individual practices, booking curves, and revenue breakdown.
+  Columns are sortable using the controls below. For a month-by-month forward look at booking
+  rates and practice RAG splits through to June, visit the
+  <a href="{{ url_for('forward_looking') }}" style="color:#0079c8; font-weight:600;">Outlook</a> tab.
+</p>
+
+<!-- Sort controls -->
+<div class="card mb-3">
+  <div class="card-body py-2 d-flex align-items-center gap-3 flex-wrap">
+    <span class="fw-bold small text-muted">Sort by:</span>
+    {% set sort_options = [('name','Area Name'),('region','Region'),('ytd_delivery','YTD Delivery'),
+                           ('booking_rate','Booking Rate'),('revenue_delivery','Rev Delivery'),('practice_count','# Practices')] %}
+    {% for key, label in sort_options %}
+    {% set new_order = 'asc' if sort_by != key or order == 'desc' else 'desc' %}
+    <a href="?sort={{ key }}&order={{ new_order }}"
+       class="btn btn-xs {{ 'btn-primary' if sort_by == key else 'btn-outline-secondary' }}">
+      {{ label }}
+      {% if sort_by == key %}
+      <i class="fas fa-chevron-{{ 'up' if order == 'asc' else 'down' }} fa-xs ms-1"></i>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Area table -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="fas fa-map me-1"></i> All 25 Areas
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Status</th>
+            <th>Area</th>
+            <th>Region</th>
+            <th class="text-end">Practices<br><span class="text-secondary small">G / A / R</span></th>
+            <th class="text-end">Bookings (Mar)</th>
+            <th class="text-end">Booking Rate</th>
+            <th class="text-end">Forecast Rev</th>
+            <th class="text-end">Mar Rev Gap</th>
+            <th class="text-end">YTD Revenue</th>
+            <th class="text-end">YTD Delivery</th>
+            <th class="text-center">CC</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for area in areas %}
+          <tr>
+            <td><span class="tl-dot {{ area.traffic_light }}"></span></td>
+            <td class="fw-medium">
+              <a href="{{ url_for('area_detail', area_id=area.id) }}" class="text-decoration-none text-dark">
+                {{ area.name }}
+              </a>
+            </td>
+            <td class="text-muted small">{{ area.region }}</td>
+            <td class="text-end small">
+              {{ area.practice_count }}&nbsp;
+              <span class="text-success">{{ area.green_count }}</span> /
+              <span class="text-warning">{{ area.amber_count }}</span> /
+              <span class="text-danger">{{ area.red_count }}</span>
+            </td>
+            <td class="text-end small">{{ "{:,}".format(area.total_bookings) }}</td>
+            <td class="text-end">
+              {% set br = area.booking_rate %}
+              <span class="fw-medium small {{ 'text-success' if br >= 0.90 else ('text-danger' if br < 0.75 else 'text-warning') }}">
+                {{ (br*100)|round(1) }}%
+              </span>
+            </td>
+            <td class="text-end small">{{ area.total_forecast_revenue | currency }}</td>
+            <td class="text-end small">
+              {% set gap = area.aop_gap_revenue %}
+              <span class="{{ 'text-success' if gap >= 0 else 'text-danger' }}">
+                {{ '+' if gap >= 0 else '' }}{{ gap | currency }}
+              </span>
+            </td>
+            <td class="text-end small">{{ area.ytd_revenue | currency }}</td>
+            <td class="text-end">
+              <div class="d-flex align-items-center justify-content-end gap-1">
+                <div class="progress flex-grow-1" style="height:5px;min-width:50px;">
+                  <div class="progress-bar {{ 'bg-success' if area.ytd_delivery >= 0.97 else ('bg-danger' if area.ytd_delivery < 0.90 else 'bg-warning') }}"
+                       style="width:{{ [area.ytd_delivery*100,100]|min|round(0) }}%"></div>
+                </div>
+                <span class="small fw-medium">{{ (area.ytd_delivery*100)|round(1) }}%</span>
+              </div>
+            </td>
+            <td class="text-center">
+              {% if area.connected_care %}
+              <span class="badge bg-info-subtle text-info border border-info-subtle" title="Connected Care">CC</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('area_detail', area_id=area.id) }}" class="btn btn-xs btn-outline-primary">Detail →</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Regional summary -->
+<h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing:1px;font-size:11px;">
+  <i class="fas fa-layer-group me-2"></i>Regional Summary
+</h6>
+<div class="card mb-4">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Region</th>
+          <th class="text-end">Areas</th>
+          <th class="text-end">Practices</th>
+          <th class="text-end">On Track / At Risk / Off Track</th>
+          <th class="text-end">YTD Revenue</th>
+          <th class="text-end">YTD AOP</th>
+          <th class="text-end">YTD Delivery</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for region_name, r in regions.items() | sort %}
+        <tr>
+          <td class="fw-medium">{{ region_name }}</td>
+          <td class="text-end small">{{ r.area_count }}</td>
+          <td class="text-end small">{{ r.practice_count }}</td>
+          <td class="text-end small">
+            <span class="text-success fw-medium">{{ r.green }}</span> /
+            <span class="text-warning fw-medium">{{ r.amber }}</span> /
+            <span class="text-danger fw-medium">{{ r.red }}</span>
+          </td>
+          <td class="text-end small">{{ r.total_ytd_rev | currency }}</td>
+          <td class="text-end small text-muted">{{ r.total_ytd_aop | currency }}</td>
+          <td class="text-end">
+            <span class="fw-bold small {{ 'text-success' if r.ytd_delivery >= 0.97 else ('text-danger' if r.ytd_delivery < 0.90 else 'text-warning') }}">
+              {{ (r.ytd_delivery*100)|round(1) }}%
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

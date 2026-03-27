@@ -1,0 +1,288 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Bupa Dental Care Forecasting App — Component Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --bupa-blue: #0066cc;
+  --bupa-dark: #0d1846;
+  --bupa-blue-light: #e8f1fb;
+  --green: #198754;
+  --amber: #e6a800;
+  --red: #dc3545;
+}
+
+/* ── KPI Cards ───────────────────────────────────────────────────────────── */
+
+.kpi-card {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+.kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.bg-primary-soft { background: #e8f1fb; }
+.bg-success-soft { background: #e8f5ed; }
+.bg-warning-soft { background: #fff8e1; }
+.bg-info-soft    { background: #e3f6fc; }
+.bg-danger-soft  { background: #fde8ea; }
+
+.kpi-body { flex: 1; min-width: 0; }
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #12213a;
+  line-height: 1.3;
+  margin: 2px 0;
+}
+
+.kpi-sub {
+  font-size: 0.76rem;
+  color: #6c757d;
+}
+
+.kpi-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.badge-green { background: #d1f0e3; color: #0d6e3e; }
+.badge-amber { background: #fff3cd; color: #856404; }
+.badge-red   { background: #fde8ea; color: #9b1c27; }
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+.card {
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1a2332;
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+/* ── Traffic Lights ──────────────────────────────────────────────────────── */
+
+.tl-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.tl-dot.green { background: var(--green); }
+.tl-dot.amber { background: var(--amber); }
+.tl-dot.red   { background: var(--red); }
+
+.tl-legend {
+  font-size: 0.78rem;
+  color: #495057;
+}
+
+.tl-badge-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.tl-badge-lg.green { background: #d1f0e3; color: var(--green); }
+.tl-badge-lg.amber { background: #fff3cd; color: var(--amber); }
+.tl-badge-lg.red   { background: #fde8ea; color: var(--red); }
+
+/* ── Practice Header ─────────────────────────────────────────────────────── */
+
+.practice-header {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.practice-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #12213a;
+}
+
+/* ── Issue / Explainability Cards ────────────────────────────────────────── */
+
+.issue-card {
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+}
+
+.issue-demand   { background: #fff8e1; border: 1px solid #ffe082; }
+.issue-mix      { background: #e3f2fd; border: 1px solid #90caf9; }
+.issue-supply   { background: #f3e5f5; border: 1px solid #ce93d8; }
+.issue-whitespace { background: #e8f5e9; border: 1px solid #a5d6a7; }
+
+.issue-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.issue-demand   .issue-header i { color: #e65100; }
+.issue-mix      .issue-header i { color: #1565c0; }
+.issue-supply   .issue-header i { color: #6a1b9a; }
+.issue-whitespace .issue-header i { color: #1b5e20; }
+
+.issue-title { flex: 1; }
+
+.issue-severity {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.issue-sev-high   { background: #fde8ea; color: #9b1c27; }
+.issue-sev-medium { background: #fff3cd; color: #856404; }
+.issue-sev-low    { background: #d1f0e3; color: #0d6e3e; }
+
+.issue-desc {
+  font-size: 0.83rem;
+  color: #495057;
+  margin-bottom: 12px;
+}
+
+.issue-actions {
+  font-size: 0.8rem;
+}
+
+.issue-actions-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.issue-actions ul {
+  padding-left: 16px;
+  color: #343a40;
+}
+
+.issue-actions li {
+  margin-bottom: 3px;
+  line-height: 1.4;
+}
+
+/* ── Forecast Summary Cards ──────────────────────────────────────────────── */
+
+.forecast-summary-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.fs-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.fs-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #12213a;
+}
+
+.fs-aop {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin: 4px 0;
+}
+
+.fs-gap {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.fs-delivery {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* ── Misc Utilities ──────────────────────────────────────────────────────── */
+
+.btn-xs {
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+
+.area-row:hover { background: #f8f9fa; }
+
+table th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+table td {
+  font-size: 0.82rem;
+  vertical-align: middle;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .kpi-value { font-size: 1.1rem; }
+  .main-content { padding: 12px !important; }
+}
