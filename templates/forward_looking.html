@@ -2,7 +2,7 @@
 {% block title %}Outlook{% endblock %}
 {% block page_title %}3-Month Forward Looking Analysis{% endblock %}
 
-{# ── Traffic-light icon macro ── #}
+{# ── Traffic-light icon macro (region total rows only) ── #}
 {% macro _tl_icon(rate, high, low) -%}
   {%- if rate >= high -%}<i class="fas fa-check-circle text-success"></i>
   {%- elif rate < low -%}<i class="fas fa-times-circle text-danger"></i>
@@ -10,17 +10,40 @@
   {%- endif -%}
 {%- endmacro %}
 
+{# ── Progress bar macro — threshold-coloured (booking rate / rev delivery) ── #}
+{% macro _pbar(val, high, low) %}
+  {% set pct = (val * 100) | round(1) %}
+  {% set w   = [pct, 100] | min %}
+  {% if val >= high %}{% set col = '#1b883c' %}
+  {% elif val < low %}{% set col = '#dc3545' %}
+  {% else %}{% set col = '#d97706' %}{% endif %}
+  <div class="fwd-bar">
+    <div class="fwd-bar-fill" style="width:{{ w }}%; background:{{ col }};"></div>
+    <span class="fwd-bar-lbl">{{ pct }}%</span>
+  </div>
+{% endmacro %}
+
+{# ── Progress bar macro — fixed colour (RAG % columns) ── #}
+{% macro _pbar_f(pct, col) %}
+  <div class="fwd-bar">
+    <div class="fwd-bar-fill" style="width:{{ [pct, 100]|min }}%; background:{{ col }};"></div>
+    <span class="fwd-bar-lbl">{{ pct }}%</span>
+  </div>
+{% endmacro %}
+
 {% block content %}
 
-<div class="page-desc">
-  <strong>Area-level booking and revenue outlook for the next 3 months.</strong>
-  The <strong>March</strong> column shows actual current-month performance (booking rate and
-  practice traffic-light split). The <strong>April, May and June</strong> columns show
-  forecast performance based on each practice's historical booking curve, NHS/Private mix
-  and price uplifts. Use the <strong>Region</strong> and <strong>Month</strong> filters to
-  focus on what matters — with both active the table reduces to a handful of rows and columns.
-  Click any area name to drill into its full detail page.
-</div>
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">3-Month Forward Looking Analysis</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
+  Area-level booking and revenue outlook across all 25 operational areas for March through June.
+  The <strong>Mar 26</strong> column shows <em>actual</em> current-month performance — how many
+  appointments are booked relative to what we would expect at this point in the month, and the
+  current practice RAG split. The <strong>Apr, May and Jun</strong> columns show
+  <em>forecast</em> performance, modelled from each practice's historical booking curve,
+  NHS/Private mix, and expected price uplifts. Progress bars show the booking rate and revenue
+  delivery against AOP — green ≥ 90% / 97%, amber is in range, red is below target.
+  Use the <strong>Region</strong> and <strong>Month</strong> filters to narrow the view.
+</p>
 
 {# Month keys: 0=cur (Mar), 1=apr, 2=may, 3=jun #}
 {% set mkeys   = ['cur', 'apr', 'may', 'jun'] %}
@@ -64,7 +87,7 @@
 
     <span class="ms-auto text-muted small d-none d-lg-block">
       <i class="fas fa-info-circle me-1"></i>
-      Actual for March · Forecast for Apr–Jun · Click any area to drill in
+      Actual for March · Forecast for Apr–Jun · Click any area name to drill in
     </span>
   </div>
 </div>
@@ -114,29 +137,17 @@
             <tr class="fwd-region-total" data-region="{{ ns.prev_region }}">
               <td class="fw-bold ps-3 small">Total {{ ns.prev_region }}</td>
               <td class="text-center fw-bold small">{{ reg.practice_count }}</td>
-              <td class="col-cur col-grp-start text-center">
-                {{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }}
-                <strong>{{ (reg.cur_booking_rate*100)|round(1) }}%</strong>
-              </td>
-              <td class="col-cur fwd-col-red text-center fw-bold small">{{ reg.cur_red_pct }}%</td>
-              <td class="col-cur fwd-col-amb text-center fw-bold small">{{ reg.cur_amber_pct }}%</td>
-              <td class="col-cur fwd-col-grn text-center fw-bold small">{{ reg.cur_green_pct }}%</td>
-              <td class="col-cur text-center">
-                {{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }}
-                <strong>{{ (reg.cur_revenue_delivery*100)|round(1) }}%</strong>
-              </td>
+              <td class="col-cur col-grp-start">{{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }} {{ _pbar(reg.cur_booking_rate, 0.90, 0.75) }}</td>
+              <td class="col-cur fwd-col-red">{{ _pbar_f(reg.cur_red_pct,   '#dc3545') }}</td>
+              <td class="col-cur fwd-col-amb">{{ _pbar_f(reg.cur_amber_pct, '#d97706') }}</td>
+              <td class="col-cur fwd-col-grn">{{ _pbar_f(reg.cur_green_pct, '#1b883c') }}</td>
+              <td class="col-cur">{{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }} {{ _pbar(reg.cur_revenue_delivery, 0.97, 0.90) }}</td>
               {% for fi in range(3) %}{% set fm = reg.fwd[fi] %}{% set mk = mkeys[fi+1] %}
-              <td class="col-{{ mk }} col-grp-start text-center">
-                {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }}
-                <strong>{{ (fm.booking_rate*100)|round(1) }}%</strong>
-              </td>
-              <td class="col-{{ mk }} fwd-col-red text-center fw-bold small">{{ fm.red_pct }}%</td>
-              <td class="col-{{ mk }} fwd-col-amb text-center fw-bold small">{{ fm.amber_pct }}%</td>
-              <td class="col-{{ mk }} fwd-col-grn text-center fw-bold small">{{ fm.green_pct }}%</td>
-              <td class="col-{{ mk }} text-center">
-                {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }}
-                <strong>{{ (fm.revenue_delivery*100)|round(1) }}%</strong>
-              </td>
+              <td class="col-{{ mk }} col-grp-start">{{ _tl_icon(fm.booking_rate, 0.90, 0.75) }} {{ _pbar(fm.booking_rate, 0.90, 0.75) }}</td>
+              <td class="col-{{ mk }} fwd-col-red">{{ _pbar_f(fm.red_pct,   '#dc3545') }}</td>
+              <td class="col-{{ mk }} fwd-col-amb">{{ _pbar_f(fm.amber_pct, '#d97706') }}</td>
+              <td class="col-{{ mk }} fwd-col-grn">{{ _pbar_f(fm.green_pct, '#1b883c') }}</td>
+              <td class="col-{{ mk }}">{{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }} {{ _pbar(fm.revenue_delivery, 0.97, 0.90) }}</td>
               {% endfor %}
             </tr>
             {% endif %}
@@ -158,25 +169,17 @@
                  class="text-decoration-none text-dark fw-medium">{{ area.name }}</a>
             </td>
             <td class="text-center small text-muted">{{ area.practice_count }}</td>
-            <td class="col-cur col-grp-start text-center small">
-              {{ _tl_icon(area.booking_rate, 0.90, 0.75) }} {{ (area.booking_rate*100)|round(1) }}%
-            </td>
-            <td class="col-cur fwd-col-red text-center small">{{ crp }}%</td>
-            <td class="col-cur fwd-col-amb text-center small">{{ cap }}%</td>
-            <td class="col-cur fwd-col-grn text-center small">{{ cgp }}%</td>
-            <td class="col-cur text-center small">
-              {{ _tl_icon(area.revenue_delivery, 0.97, 0.90) }} {{ (area.revenue_delivery*100)|round(1) }}%
-            </td>
+            <td class="col-cur col-grp-start">{{ _pbar(area.booking_rate, 0.90, 0.75) }}</td>
+            <td class="col-cur fwd-col-red">{{ _pbar_f(crp, '#dc3545') }}</td>
+            <td class="col-cur fwd-col-amb">{{ _pbar_f(cap, '#d97706') }}</td>
+            <td class="col-cur fwd-col-grn">{{ _pbar_f(cgp, '#1b883c') }}</td>
+            <td class="col-cur">{{ _pbar(area.revenue_delivery, 0.97, 0.90) }}</td>
             {% for fi in range(3) %}{% set fm = area.forward_months[fi] %}{% set mk = mkeys[fi+1] %}
-            <td class="col-{{ mk }} col-grp-start text-center small">
-              {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }} {{ (fm.booking_rate*100)|round(1) }}%
-            </td>
-            <td class="col-{{ mk }} fwd-col-red text-center small">{{ fm.red_pct }}%</td>
-            <td class="col-{{ mk }} fwd-col-amb text-center small">{{ fm.amber_pct }}%</td>
-            <td class="col-{{ mk }} fwd-col-grn text-center small">{{ fm.green_pct }}%</td>
-            <td class="col-{{ mk }} text-center small">
-              {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }} {{ (fm.revenue_delivery*100)|round(1) }}%
-            </td>
+            <td class="col-{{ mk }} col-grp-start">{{ _pbar(fm.booking_rate, 0.90, 0.75) }}</td>
+            <td class="col-{{ mk }} fwd-col-red">{{ _pbar_f(fm.red_pct,   '#dc3545') }}</td>
+            <td class="col-{{ mk }} fwd-col-amb">{{ _pbar_f(fm.amber_pct, '#d97706') }}</td>
+            <td class="col-{{ mk }} fwd-col-grn">{{ _pbar_f(fm.green_pct, '#1b883c') }}</td>
+            <td class="col-{{ mk }}">{{ _pbar(fm.revenue_delivery, 0.97, 0.90) }}</td>
             {% endfor %}
           </tr>
 
@@ -187,29 +190,17 @@
           <tr class="fwd-region-total" data-region="{{ ns.prev_region }}">
             <td class="fw-bold ps-3 small">Total {{ ns.prev_region }}</td>
             <td class="text-center fw-bold small">{{ reg.practice_count }}</td>
-            <td class="col-cur col-grp-start text-center">
-              {{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }}
-              <strong>{{ (reg.cur_booking_rate*100)|round(1) }}%</strong>
-            </td>
-            <td class="col-cur fwd-col-red text-center fw-bold small">{{ reg.cur_red_pct }}%</td>
-            <td class="col-cur fwd-col-amb text-center fw-bold small">{{ reg.cur_amber_pct }}%</td>
-            <td class="col-cur fwd-col-grn text-center fw-bold small">{{ reg.cur_green_pct }}%</td>
-            <td class="col-cur text-center">
-              {{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }}
-              <strong>{{ (reg.cur_revenue_delivery*100)|round(1) }}%</strong>
-            </td>
+            <td class="col-cur col-grp-start">{{ _tl_icon(reg.cur_booking_rate, 0.90, 0.75) }} {{ _pbar(reg.cur_booking_rate, 0.90, 0.75) }}</td>
+            <td class="col-cur fwd-col-red">{{ _pbar_f(reg.cur_red_pct,   '#dc3545') }}</td>
+            <td class="col-cur fwd-col-amb">{{ _pbar_f(reg.cur_amber_pct, '#d97706') }}</td>
+            <td class="col-cur fwd-col-grn">{{ _pbar_f(reg.cur_green_pct, '#1b883c') }}</td>
+            <td class="col-cur">{{ _tl_icon(reg.cur_revenue_delivery, 0.97, 0.90) }} {{ _pbar(reg.cur_revenue_delivery, 0.97, 0.90) }}</td>
             {% for fi in range(3) %}{% set fm = reg.fwd[fi] %}{% set mk = mkeys[fi+1] %}
-            <td class="col-{{ mk }} col-grp-start text-center">
-              {{ _tl_icon(fm.booking_rate, 0.90, 0.75) }}
-              <strong>{{ (fm.booking_rate*100)|round(1) }}%</strong>
-            </td>
-            <td class="col-{{ mk }} fwd-col-red text-center fw-bold small">{{ fm.red_pct }}%</td>
-            <td class="col-{{ mk }} fwd-col-amb text-center fw-bold small">{{ fm.amber_pct }}%</td>
-            <td class="col-{{ mk }} fwd-col-grn text-center fw-bold small">{{ fm.green_pct }}%</td>
-            <td class="col-{{ mk }} text-center">
-              {{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }}
-              <strong>{{ (fm.revenue_delivery*100)|round(1) }}%</strong>
-            </td>
+            <td class="col-{{ mk }} col-grp-start">{{ _tl_icon(fm.booking_rate, 0.90, 0.75) }} {{ _pbar(fm.booking_rate, 0.90, 0.75) }}</td>
+            <td class="col-{{ mk }} fwd-col-red">{{ _pbar_f(fm.red_pct,   '#dc3545') }}</td>
+            <td class="col-{{ mk }} fwd-col-amb">{{ _pbar_f(fm.amber_pct, '#d97706') }}</td>
+            <td class="col-{{ mk }} fwd-col-grn">{{ _pbar_f(fm.green_pct, '#1b883c') }}</td>
+            <td class="col-{{ mk }}">{{ _tl_icon(fm.revenue_delivery, 0.97, 0.90) }} {{ _pbar(fm.revenue_delivery, 0.97, 0.90) }}</td>
             {% endfor %}
           </tr>
           {% endif %}
@@ -224,33 +215,50 @@
 
 {% block scripts %}
 <style>
+/* ── Table base ─────────────────────────────────────────────────────────── */
 .fwd-table { font-size: .78rem; min-width: 600px; }
-.fwd-month-hdr {
-  text-align: center; font-weight: 700; font-size: .75rem; padding: 6px 4px;
-}
+.fwd-month-hdr { text-align:center; font-weight:700; font-size:.75rem; padding:6px 4px; }
 .fwd-cur   { background: #0d5c5c; color: #fff; }
 .fwd-fcast { background: #1a6b8a; color: #fff; }
 .fwd-th-sub {
-  font-size: .70rem; font-weight: 600; color: #495057;
-  background: #f8f9fa; padding: 4px 5px; white-space: nowrap;
+  font-size:.70rem; font-weight:600; color:#495057;
+  background:#f8f9fa; padding:4px 5px; white-space:nowrap;
 }
-.fwd-th-area { min-width: 155px; background: #f8f9fa; }
-.fwd-th-vol  { width: 40px;      background: #f8f9fa; }
-.fwd-col-red { background: rgba(220, 53, 69, 0.10); }
-.fwd-col-amb { background: rgba(255,193,  7, 0.12); }
-.fwd-col-grn { background: rgba( 25,135, 84, 0.10); }
-.col-grp-start { border-left: 2px solid #dee2e6 !important; }
-.col-grp-hdr   { border-left: 2px solid rgba(255,255,255,0.3) !important; }
-.fwd-area-row td { padding: 4px 5px; vertical-align: middle; }
-.fwd-area-row:hover { background: rgba(0,0,0,0.025); }
+.fwd-th-area { min-width:155px; background:#f8f9fa; }
+.fwd-th-vol  { width:40px;      background:#f8f9fa; }
+.fwd-col-red { background: rgba(220,53,69,0.08); }
+.fwd-col-amb { background: rgba(255,193,7,0.10); }
+.fwd-col-grn { background: rgba(25,135,84,0.08); }
+.col-grp-start { border-left:2px solid #dee2e6 !important; }
+.col-grp-hdr   { border-left:2px solid rgba(255,255,255,0.3) !important; }
+.fwd-area-row td { padding:5px 6px; vertical-align:middle; }
+.fwd-area-row:hover { background:rgba(0,0,0,0.025); }
 .fwd-region-hdr td {
-  background: #343a40; color: #fff; font-size: .72rem; font-weight: 700;
-  padding: 5px 10px; letter-spacing: .4px; text-transform: uppercase;
+  background:#343a40; color:#fff; font-size:.72rem; font-weight:700;
+  padding:5px 10px; letter-spacing:.4px; text-transform:uppercase;
 }
-.fwd-region-total td {
-  background: #e9ecef; border-top: 1.5px solid #adb5bd; padding: 5px 5px;
+.fwd-region-total td { background:#e9ecef; border-top:1.5px solid #adb5bd; padding:5px 6px; }
+
+/* ── Progress bars ───────────────────────────────────────────────────────── */
+.fwd-bar {
+  position: relative; width: 100%; min-width: 52px;
+  background: #dee2e6; border-radius: 5px;
+  height: 17px; overflow: hidden;
 }
-/* Column visibility toggles */
+.fwd-bar-fill {
+  height: 100%; border-radius: 5px;
+  transition: width .25s ease;
+}
+.fwd-bar-lbl {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .65rem; font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 4px rgba(0,0,0,0.45);
+  pointer-events: none;
+}
+
+/* ── Column visibility toggles ───────────────────────────────────────────── */
 .fwd-table.hide-cur .col-cur { display: none; }
 .fwd-table.hide-apr .col-apr { display: none; }
 .fwd-table.hide-may .col-may { display: none; }

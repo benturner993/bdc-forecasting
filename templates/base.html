@@ -52,6 +52,18 @@
             background: rgba(255,255,255,0.15);
             color: #7ab8f5;
         }
+        .toolbar > a.nav-take-action {
+            background: #db3907;
+            color: #fff !important;
+        }
+        .toolbar > a.nav-take-action:hover {
+            background: #c53206;
+            color: #fff !important;
+        }
+        .toolbar > a.nav-take-action.active {
+            background: #a82b05;
+            color: #fff !important;
+        }
         /* ── Dropdown ── */
         .nav-dropdown { position: relative; display: inline-block; }
         .nav-dropdown > a {
@@ -228,8 +240,7 @@
             </a>
 
             <a href="{{ url_for('take_action') }}"
-               class="{% if request.endpoint == 'take_action' %}active{% endif %}"
-               style="background: rgba(220,53,69,0.18);">
+               class="nav-take-action {% if request.endpoint == 'take_action' %}active{% endif %}">
                 <i class="fas fa-bolt me-1"></i>Take Action
             </a>
 

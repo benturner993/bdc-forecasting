@@ -4,13 +4,17 @@
 
 {% block content %}
 
-<div class="page-desc">
-  <strong>Searchable directory of all 380 Bupa Dental Care practices.</strong>
-  Filter by area, performance status, or booking profile. Use the search box to find a specific
-  practice by name or location. Click any row to open the full practice detail page including
-  booking curve, revenue forecast, capacity whitespace, and the explainability panel.
-  <span class="text-muted">Showing <strong id="visible-count">–</strong> of {{ total_count }} practices.</span>
-</div>
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Practice Directory</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
+  Searchable directory of all 380 Bupa Dental Care practices across 25 areas in the UK.
+  Use the filters below to narrow by area, performance status (On Track / At Risk / Off Track),
+  or booking profile (Early, Mixed, Late). Click the <strong>View →</strong> button on any row
+  to open the full practice detail page — including the booking curve, current month revenue
+  forecast, capacity whitespace, and a root-cause explainability panel with suggested actions.
+  Showing <strong>{{ practices | length }}</strong> of
+  <strong>{{ filtered_count }}</strong> filtered
+  ({{ total_count }} total) practices.
+</p>
 
 <!-- Filters -->
 <div class="card mb-3">
@@ -68,6 +72,8 @@
           <option value="desc" {{ 'selected' if order == 'desc' }}>Descending</option>
         </select>
       </div>
+      <!-- preserve limit across filter changes -->
+      <input type="hidden" name="limit" value="{{ limit }}">
       {% if area_filter != 'all' or status_filter != 'all' or profile_filter != 'all' %}
       <a href="{{ url_for('practices_list') }}" class="btn btn-xs btn-outline-secondary">
         <i class="fas fa-times me-1"></i>Clear filters
@@ -75,6 +81,20 @@
       {% endif %}
     </form>
   </div>
+</div>
+
+<!-- Row-limit selector -->
+<div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+  <span class="text-muted small fw-bold">Show:</span>
+  {% for opt in [('5','5'), ('25','25'), ('50','50'), ('100','100'), ('all','All')] %}
+  <a href="?area={{ area_filter }}&status={{ status_filter }}&profile={{ profile_filter }}&sort={{ sort_by }}&order={{ order }}&limit={{ opt[0] }}"
+     class="btn btn-sm {{ 'btn-primary' if limit == opt[0] else 'btn-outline-secondary' }}">
+    {{ opt[1] }}
+  </a>
+  {% endfor %}
+  <span class="text-muted small ms-2">
+    Showing <strong>{{ practices | length }}</strong> of <strong>{{ filtered_count }}</strong> filtered practices
+  </span>
 </div>
 
 <!-- Practice table -->
@@ -169,12 +189,10 @@
 <script>
 const searchInput  = document.getElementById('practice-search');
 const rows         = document.querySelectorAll('.practice-row');
-const visCount     = document.getElementById('visible-count');
 const visCountFoot = document.getElementById('visible-count-footer');
 
 function updateCount() {
   const n = [...rows].filter(r => r.style.display !== 'none').length;
-  if (visCount)     visCount.textContent     = n;
   if (visCountFoot) visCountFoot.textContent = n;
 }
 

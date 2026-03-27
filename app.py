@@ -527,24 +527,32 @@ def take_action():
 @app.route("/practices")
 def practices_list():
     practices = DATA["practices"]
-    area_filter = request.args.get("area", "all")
-    status_filter = request.args.get("status", "all")
+    area_filter    = request.args.get("area",    "all")
+    status_filter  = request.args.get("status",  "all")
     profile_filter = request.args.get("profile", "all")
+    limit_raw      = request.args.get("limit",   "5")
 
     if area_filter != "all":
-        practices = [p for p in practices if p["area_id"] == area_filter]
+        practices = [p for p in practices if p["area_id"]        == area_filter]
     if status_filter != "all":
-        practices = [p for p in practices if p["traffic_light"] == status_filter]
+        practices = [p for p in practices if p["traffic_light"]  == status_filter]
     if profile_filter != "all":
         practices = [p for p in practices if p["booking_profile"] == profile_filter]
 
     sort_by = request.args.get("sort", "name")
-    order = request.args.get("order", "asc")
+    order   = request.args.get("order", "asc")
     valid_sorts = ("name", "booking_rate", "ytd_delivery", "revenue_delivery",
                    "aop_monthly_revenue", "nhs_mix")
     if sort_by in valid_sorts:
         practices = sorted(practices, key=lambda p: p[sort_by],
                            reverse=(order == "desc"))
+
+    filtered_count = len(practices)
+
+    # Apply row limit
+    limit = None if limit_raw == "all" else int(limit_raw) if limit_raw.isdigit() else 5
+    if limit is not None:
+        practices = practices[:limit]
 
     return render_template(
         "practices.html",
@@ -555,6 +563,8 @@ def practices_list():
         profile_filter=profile_filter,
         sort_by=sort_by,
         order=order,
+        limit=limit_raw,
+        filtered_count=filtered_count,
         total_count=len(DATA["practices"]),
         today=DATA["today"],
     )

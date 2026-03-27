@@ -4,31 +4,34 @@
 
 {% block content %}
 
-<div class="page-desc">
+<h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Revenue &amp; Booking Forecast</h2>
+<p style="color:#0d1846; font-size:0.92rem; margin-bottom:12px;">
   {% if level == 'practice' %}
-    <strong>Practice-level forecast — {{ practice.name }}.</strong>
-    Projecting monthly revenue and booking volumes for this practice over the next
-    <strong>{{ horizon }} months</strong> using its historical booking curve, NHS/Private mix
-    ({{ (practice.nhs_mix * 100)|round(0)|int }}% NHS · {{ (practice.private_mix * 100)|round(0)|int }}% Private)
-    and expected price uplifts (NHS +2.5%/yr · Private +5.0%/yr).
+    <strong>Practice view — {{ practice.name }}.</strong>
+    Monthly revenue and booking volumes for the next <strong>{{ horizon }} months</strong>, using this
+    practice's historical booking curve, NHS/Private mix
+    ({{ (practice.nhs_mix * 100)|round(0)|int }}% NHS · {{ (practice.private_mix * 100)|round(0)|int }}% private),
+    and expected price uplifts (NHS +2.5%/yr · private +5.0%/yr).
   {% elif level == 'area' %}
-    <strong>Area-level forecast — {{ area.name }}.</strong>
-    Aggregating practice-level projections across all {{ area.practices|length }} practices in this area
-    over the next <strong>{{ horizon }} months</strong>.
+    <strong>Area view — {{ area.name }}.</strong>
+    Aggregated projections across all {{ area.practices|length }} practices in this area for the next
+    <strong>{{ horizon }} months</strong>.
   {% else %}
-    <strong>National forecast — All 25 Areas.</strong>
-    Aggregating projections across all 380 practices over the next <strong>{{ horizon }} months</strong>
-    (FY 2026/27), using historical booking curves, seasonal patterns and expected price uplifts
-    (NHS +2.5%/yr · Private +5.0%/yr).
+    <strong>National view — all 25 areas.</strong>
+    Aggregated projections across all 380 practices for the next <strong>{{ horizon }} months</strong>
+    (FY 2026/27), using historical booking curves, seasonal patterns, and expected price uplifts
+    (NHS +2.5%/yr · private +5.0%/yr).
   {% endif %}
-  The shaded band represents the <strong>80% confidence interval</strong>. Use the controls below
-  to drill from National → Area → Practice or change the forecast horizon.
+  The shaded band on the chart is the <strong>80% confidence interval</strong>. Use the tabs below to
+  switch between National, Area, and Practice, pick a horizon (3 / 6 / 12 months), and drill into detail.
+</p>
+<p style="color:#0d1846; font-size:0.85rem; margin-bottom:20px;">
   {% if model_used %}
-    <span class="badge bg-primary ms-2"><i class="fas fa-robot me-1"></i>LightGBM model active</span>
+    <span class="badge bg-primary"><i class="fas fa-robot me-1"></i>LightGBM model active</span>
   {% else %}
-    <span class="badge bg-secondary ms-2"><i class="fas fa-chart-line me-1"></i>Statistical baseline</span>
+    <span class="badge bg-secondary"><i class="fas fa-chart-line me-1"></i>Statistical baseline</span>
   {% endif %}
-</div>
+</p>
 
 <!-- ── Controls ──────────────────────────────────────────────────────────── -->
 <div class="card mb-4">
