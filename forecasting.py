@@ -120,6 +120,11 @@ def _load_model():
     return _MODEL_CACHE["payload"]
 
 
+def ml_model_deployed() -> bool:
+    """True when a trained model in model/model.pkl is used for practice-level forecasts."""
+    return _load_model() is not None
+
+
 # ── Price multiplier helper ────────────────────────────────────────────────
 
 def _monthly_price_multiplier(base_month: int, base_year: int,

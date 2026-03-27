@@ -8,7 +8,10 @@ import json
 from flask import Flask, render_template, request, jsonify, abort
 from data_generator import generate_all_data, FORECAST_MONTHS
 from forecasting import (
-    forecast_practice, forecast_area, forecast_national,
+    forecast_practice,
+    forecast_area,
+    forecast_national,
+    ml_model_deployed,
     build_booking_curve_chart_data,
 )
 
@@ -699,13 +702,15 @@ def forecast_view():
         area = DATA["area_index"].get(area_id)
         if not area:
             abort(404)
-        level  = "area"
-        nf     = forecast_area(area, horizon)
-        title  = area["name"]
+        level      = "area"
+        nf         = forecast_area(area, horizon)
+        title      = area["name"]
+        model_used = ml_model_deployed()
     else:
-        level  = "national"
-        nf     = forecast_national(DATA["areas"], horizon)
-        title  = "All Areas — National View"
+        level      = "national"
+        nf         = forecast_national(DATA["areas"], horizon)
+        title      = "All Areas — National View"
+        model_used = ml_model_deployed()
 
     # ── Build chart data ───────────────────────────────────────────────────
     fc_labels   = [m["label"]            for m in nf["monthly"]]
