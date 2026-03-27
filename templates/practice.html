@@ -5,30 +5,48 @@
 {% block content %}
 
 <!-- Practice header -->
-<div class="practice-header mb-4">
-  <div class="d-flex align-items-start gap-3">
-    <div class="tl-badge-lg {{ p.traffic_light }}">
-      {% if p.traffic_light == 'green' %}<i class="fas fa-check"></i>
-      {% elif p.traffic_light == 'red' %}<i class="fas fa-times"></i>
-      {% else %}<i class="fas fa-minus"></i>{% endif %}
-    </div>
-    <div>
-      <h2 class="mb-0">{{ p.name }}</h2>
-      <div class="text-muted mt-1">
-        <a href="{{ url_for('area_detail', area_id=p.area_id) }}" class="text-decoration-none">
-          <i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ p.area_name }}
-        </a>
-        <span class="mx-2">·</span>
-        <span>{{ p.region }}</span>
-        {% if p.connected_care %}
-        <span class="ms-2 badge bg-info-subtle text-info border border-info-subtle">
-          <i class="fas fa-link me-1"></i>Connected Care
-        </span>
-        {% endif %}
-        <span class="ms-2 badge bg-light text-dark border">
-          <i class="fas fa-clock me-1"></i>{{ p.booking_profile | title }} booking practice
-        </span>
+<div class="practice-header practice-header-visual mb-4">
+  <div class="practice-head-grid">
+    <div class="practice-head-left">
+      <img src="{{ url_for('static', filename='bupa.png') }}" alt="Bupa" class="practice-logo">
+      <div class="practice-head-main">
+        <h2 class="mb-0">{{ p.name }}</h2>
+        <div class="practice-loc-line">
+          <a href="{{ url_for('area_detail', area_id=p.area_id) }}" class="text-decoration-none">
+            <i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ p.area_name }}
+          </a>
+          <span class="mx-2">·</span>
+          <span>{{ p.region }}</span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <span class="badge rounded-pill {{ 'bg-success' if p.traffic_light == 'green' else ('bg-danger' if p.traffic_light == 'red' else 'bg-warning text-dark') }}">
+            <i class="fas {{ 'fa-check-circle' if p.traffic_light == 'green' else ('fa-triangle-exclamation' if p.traffic_light == 'red' else 'fa-circle-exclamation') }} me-1"></i>
+            {{ p.traffic_light | title }}
+          </span>
+          <span class="badge bg-light text-dark border">
+            <i class="fas fa-clock me-1"></i>{{ p.booking_profile | title }} booking practice
+          </span>
+        </div>
       </div>
+    </div>
+
+    <div class="practice-head-right">
+      <div class="practice-issues-wrap">
+        {% if p.issues and p.issues|length > 0 %}
+          {% for issue in p.issues %}
+          <span class="badge rounded-pill {{ 'bg-danger' if issue.severity == 'high' else ('bg-warning text-dark' if issue.severity == 'medium' else 'bg-info text-dark') }}">
+            <i class="fas fa-triangle-exclamation me-1"></i>{{ issue.title }}
+          </span>
+          {% endfor %}
+        {% else %}
+          <span class="badge rounded-pill bg-success">
+            <i class="fas fa-check-circle me-1"></i>Performance On Track
+          </span>
+        {% endif %}
+      </div>
+      <a href="{{ url_for('take_action', practice=p.id, status='all') }}" class="practice-action-banner">
+        <i class="fas fa-bolt me-1"></i>View full practice diagnosis and action plan
+      </a>
     </div>
   </div>
 </div>
@@ -95,37 +113,12 @@
   </div>
 </div>
 
-<!-- Mix + Revenue per Booking -->
+<!-- Current month booking pace + operational profile -->
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
-    <div class="card h-100">
-      <div class="card-header"><i class="fas fa-pie-chart me-1"></i> Appointment Mix</div>
-      <div class="card-body d-flex flex-column align-items-center justify-content-center">
-        <canvas id="mixChart" style="max-height:160px;max-width:160px;"></canvas>
-        <div class="mt-3 w-100 small">
-          <div class="d-flex justify-content-between mb-1">
-            <span><i class="fas fa-circle text-warning me-1"></i>NHS</span>
-            <span class="fw-medium">{{ (p.nhs_mix*100)|round(1) }}% · avg {{ p.avg_nhs_value | currency }}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-1">
-            <span><i class="fas fa-circle text-primary me-1"></i>Private</span>
-            <span class="fw-medium">{{ (p.private_mix*100)|round(1) }}% · avg {{ p.avg_private_value | currency }}</span>
-          </div>
-          <hr class="my-2">
-          <div class="d-flex justify-content-between">
-            <span class="fw-medium">Rev / Appt</span>
-            <span class="fw-bold {{ 'text-success' if p.rev_per_booking > 100 else 'text-warning' }}">
-              {{ p.rev_per_booking | currency }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-5">
+  <div class="col-lg-8">
     <div class="card h-100">
       <div class="card-header">
-        <i class="fas fa-chart-area me-1"></i> Booking Curve — Actual vs Expected
+        <i class="fas fa-chart-area me-1"></i> Booking Curve - Actual vs Expected
         <span class="text-muted small ms-2">Day 1–31 of March 2026</span>
       </div>
       <div class="card-body">
@@ -133,10 +126,28 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-lg-4">
     <div class="card h-100">
-      <div class="card-header"><i class="fas fa-warehouse me-1"></i> Capacity & Whitespace</div>
+      <div class="card-header"><i class="fas fa-warehouse me-1"></i> Capacity, Whitespace & Appointment Mix</div>
       <div class="card-body">
+        <div class="mb-3 pb-2 border-bottom">
+          <div class="small text-muted mb-1">Appointment mix and value</div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>NHS</span>
+            <span class="fw-medium">{{ (p.nhs_mix*100)|round(1) }}% · {{ p.avg_nhs_value | currency }}</span>
+          </div>
+          <div class="d-flex justify-content-between small mb-1">
+            <span>Private</span>
+            <span class="fw-medium">{{ (p.private_mix*100)|round(1) }}% · {{ p.avg_private_value | currency }}</span>
+          </div>
+          <div class="d-flex justify-content-between small">
+            <span>Revenue per appointment</span>
+            <span class="fw-bold {{ 'text-success' if p.rev_per_booking > 100 else 'text-warning' }}">
+              {{ p.rev_per_booking | currency }}
+            </span>
+          </div>
+        </div>
+
         <div class="mb-3">
           <div class="d-flex justify-content-between small mb-1">
             <span>Monthly capacity</span><span class="fw-medium">{{ "{:,}".format(p.monthly_capacity) }} slots</span>
@@ -175,56 +186,7 @@
   </div>
 </div>
 
-<!-- Explainability Panel -->
-{% if p.issues %}
-<div class="card mb-4 border-0 shadow-sm">
-  <div class="card-header bg-dark text-white">
-    <i class="fas fa-lightbulb me-1"></i> Performance Analysis & Recommended Actions
-  </div>
-  <div class="card-body">
-    <div class="row g-3">
-      {% for issue in p.issues %}
-      <div class="col-md-{{ 12 // p.issues|length if p.issues|length <= 3 else 6 }}">
-        <div class="issue-card issue-{{ issue.type }} issue-{{ issue.severity }}">
-          <div class="issue-header">
-            {% if issue.type == 'demand' %}
-            <i class="fas fa-users-slash"></i>
-            {% elif issue.type == 'mix' %}
-            <i class="fas fa-balance-scale"></i>
-            {% elif issue.type == 'supply' %}
-            <i class="fas fa-tools"></i>
-            {% else %}
-            <i class="fas fa-calendar-times"></i>
-            {% endif %}
-            <span class="issue-title">{{ issue.title }}</span>
-            <span class="issue-severity issue-sev-{{ issue.severity }}">{{ issue.severity | upper }}</span>
-          </div>
-          <p class="issue-desc">{{ issue.description }}</p>
-          <div class="issue-actions">
-            <div class="issue-actions-label">Recommended Actions</div>
-            <ul class="mb-0">
-              {% for action in issue.actions %}
-              <li>{{ action }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</div>
-{% else %}
-<div class="alert alert-success d-flex align-items-center mb-4">
-  <i class="fas fa-check-circle fa-lg me-3"></i>
-  <div>
-    <strong>Performance On Track</strong> — This practice is performing within the expected range.
-    No immediate action required. Continue monitoring weekly.
-  </div>
-</div>
-{% endif %}
-
-<!-- Historical trend + Revenue forecast -->
+<!-- Historical trend and forward outlook -->
 <div class="row g-3 mb-4">
   <div class="col-lg-6">
     <div class="card h-100">
@@ -236,7 +198,7 @@
   </div>
   <div class="col-lg-6">
     <div class="card h-100">
-      <div class="card-header"><i class="fas fa-chart-line me-1"></i> Revenue Forecast — Next 12 Months (FY 2026/27)</div>
+      <div class="card-header"><i class="fas fa-chart-line me-1"></i> Revenue Forecast - Next 12 Months (FY 2026/27)</div>
       <div class="card-body">
         <canvas id="revForecastChart" style="height:220px;"></canvas>
       </div>
@@ -244,7 +206,7 @@
   </div>
 </div>
 
-<!-- Forecast summary table -->
+<!-- Cumulative forecast summary -->
 <div class="card mb-4">
   <div class="card-header"><i class="fas fa-table me-1"></i> Cumulative Forecast Summary</div>
   <div class="card-body">
@@ -274,28 +236,6 @@
 
 {% block scripts %}
 <script>
-// Mix donut chart
-const mixCtx = document.getElementById('mixChart').getContext('2d');
-new Chart(mixCtx, {
-  type: 'doughnut',
-  data: {
-    labels: ['NHS', 'Private'],
-    datasets: [{
-      data: [{{ (p.nhs_mix * 100)|round(1) }}, {{ (p.private_mix * 100)|round(1) }}],
-      backgroundColor: ['#ffc107', '#0066cc'],
-      borderWidth: 2,
-      borderColor: '#fff'
-    }]
-  },
-  options: {
-    cutout: '60%',
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% of appointments` }}
-    }
-  }
-});
-
 // Booking curve chart
 const curveData = {{ curve_data | safe }};
 const curveCtx = document.getElementById('curveChart').getContext('2d');
@@ -365,11 +305,11 @@ new Chart(curveCtx, {
   }
 });
 
-// Historical bookings bar chart
 const histLabels   = {{ hist_labels | safe }};
 const histBookings = {{ hist_bookings | safe }};
 const histAop      = {{ hist_aop | safe }};
 const histRevenue  = {{ hist_revenue | safe }};
+// Historical bookings bar chart
 
 const hbCtx = document.getElementById('histBookingsChart').getContext('2d');
 new Chart(hbCtx, {

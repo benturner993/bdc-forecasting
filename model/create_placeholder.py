@@ -30,7 +30,7 @@ PLACEHOLDER = {
         "historical_std_bookings",
         "capacity_utilization",
         "seasonality_factor",
-        "connected_care",
+        "network_program",
         "booking_profile_encoded",
         "ytd_delivery_lag1",
         "revenue_per_booking_lag1",

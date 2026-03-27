@@ -65,7 +65,7 @@ df = historical.merge(
         "id", "nhs_mix", "private_mix",
         "avg_nhs_value", "avg_private_value",
         "monthly_capacity", "target_utilization",
-        "booking_profile", "connected_care",
+        "booking_profile", "network_program",
     ]],
     left_on="practice_id", right_on="id", how="left",
 )
@@ -92,7 +92,7 @@ df["booking_rate_vs_aop"]  = (
 df["booking_profile_encoded"] = (
     df["booking_profile"].map(BOOKING_PROFILE_ENC).fillna(1).astype(int)
 )
-df["connected_care_encoded"] = df["connected_care"].astype(int)
+df["network_program_encoded"] = df["network_program"].astype(int)
 
 # Drop rows with insufficient lag history (first 3 months per practice)
 df = df.dropna(subset=["bookings_lag1", "bookings_lag3", "rolling_avg_3m",

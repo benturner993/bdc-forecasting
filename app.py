@@ -137,15 +137,14 @@ def classify_action_plan(p: dict) -> dict:
     nhs = p["nhs_mix"]
     ws  = p["whitespace"]
     bp  = p["booking_profile"]
-    cc  = p["connected_care"]
     bv  = p["blended_value"]
 
     # ── Step 1: On track? ─────────────────────────────────────────────────
-    if ytd >= 0.97 and rd >= 0.95:
+    # Align status with Practice Directory and issue flags shown on practice detail.
+    if p.get("traffic_light") == "green" or not p.get("issues"):
         return {"status": "on_track", "issue": None, "issue_label": None,
                 "causes": [], "actions": []}
-
-    status = "off_track" if ytd < 0.90 else "at_risk"
+    status = "off_track" if p.get("traffic_light") == "red" else "at_risk"
 
     # ── Step 2: Primary issue ─────────────────────────────────────────────
     # Supply: strong demand, low whitespace — capacity is the bottleneck
@@ -180,12 +179,12 @@ def classify_action_plan(p: dict) -> dict:
     actions = []
 
     if issue == "demand":
-        # New patients — especially if not connected-care enrolled or late-booking profile
-        if not cc or bp in ("mixed", "late"):
+        # New patients - especially where booking profile suggests weaker demand capture.
+        if bp in ("mixed", "late"):
             causes.append("new_patients")
             actions += [
                 {"priority": "high", "cause": "New Patients",
-                 "action": "Run targeted marketing campaigns and connected-care outbound activity (calls, corporate events, bespoke offers).",
+                 "action": "Run targeted marketing campaigns and outbound activity (calls, corporate events, bespoke offers).",
                  "owner": "Area Manager"},
                 {"priority": "high", "cause": "New Patients",
                  "action": "Review and optimise Google Business profile and NHS Choices listing.",
@@ -277,14 +276,6 @@ def classify_action_plan(p: dict) -> dict:
                  "action": "Brief clinicians on presenting comprehensive treatment plans and specialist services to private patients.",
                  "owner": "Clinician Lead"},
             ]
-        # If connected care is active, it's a conversion lever
-        if cc:
-            actions += [
-                {"priority": "medium", "cause": "NHS vs Private",
-                 "action": "Leverage connected-care programme — cross-refer patients to private specialist services.",
-                 "owner": "Area Manager"},
-            ]
-
     # Sort: high → medium → low
     priority_order = {"high": 0, "medium": 1, "low": 2}
     actions.sort(key=lambda x: priority_order[x["priority"]])
@@ -346,14 +337,17 @@ def headlines():
 
     area_labels = [a["name"] for a in areas]
     area_ytd = [round(a["ytd_delivery"] * 100, 1) for a in areas]
-    area_tl_colors = []
-    for a in areas:
-        if a["traffic_light"] == "green":
-            area_tl_colors.append("rgba(25,135,84,0.8)")
-        elif a["traffic_light"] == "red":
-            area_tl_colors.append("rgba(220,53,69,0.8)")
-        else:
-            area_tl_colors.append("rgba(255,193,7,0.8)")
+    area_ytd_amount = [int(a["ytd_revenue"]) for a in areas]
+    # Peer-relative RAG colors (bottom quartile red, top quartile green).
+    # This avoids overusing amber when absolute thresholds cluster tightly.
+    rag_by_area_id = {a["id"]: "rgba(255,193,7,0.8)" for a in areas}
+    ranked = sorted(areas, key=lambda a: a["ytd_delivery"])
+    quartile_n = max(1, len(ranked) // 4)
+    for a in ranked[:quartile_n]:
+        rag_by_area_id[a["id"]] = "rgba(220,53,69,0.8)"
+    for a in ranked[-quartile_n:]:
+        rag_by_area_id[a["id"]] = "rgba(25,135,84,0.8)"
+    area_tl_colors = [rag_by_area_id[a["id"]] for a in areas]
 
     # Booking rate distribution across all practices (histogram buckets)
     br_buckets = [0, 0, 0, 0, 0]  # <70, 70-80, 80-90, 90-100, >100
@@ -377,6 +371,7 @@ def headlines():
         areas=areas,
         area_labels=json.dumps(area_labels),
         area_ytd=json.dumps(area_ytd),
+        area_ytd_amount=json.dumps(area_ytd_amount),
         area_tl_colors=json.dumps(area_tl_colors),
         br_buckets=json.dumps(br_buckets),
         br_labels=json.dumps(br_labels),
@@ -483,15 +478,22 @@ def take_action():
     region     = request.args.get("region", "all")
     issue_flt  = request.args.get("issue",  "all")
     status_flt = request.args.get("status", "needs_action")   # needs_action | all
+    practice_id = request.args.get("practice", "").strip()
 
-    pool = DATA["practices"]
+    if practice_id:
+        target = DATA["practice_index"].get(practice_id)
+        if not target:
+            abort(404)
+        pool = [target]
+    else:
+        pool = DATA["practices"]
 
-    if region != "all":
-        pool = [p for p in pool if p["region"] == region]
-    if issue_flt != "all":
-        pool = [p for p in pool if p["action_plan"]["issue"] == issue_flt]
-    if status_flt == "needs_action":
-        pool = [p for p in pool if p["action_plan"]["status"] != "on_track"]
+        if region != "all":
+            pool = [p for p in pool if p["region"] == region]
+        if issue_flt != "all":
+            pool = [p for p in pool if p["action_plan"]["issue"] == issue_flt]
+        if status_flt == "needs_action":
+            pool = [p for p in pool if p["action_plan"]["status"] != "on_track"]
 
     # Sort: off_track first, then at_risk, then by ytd ascending (worst first)
     status_order = {"off_track": 0, "at_risk": 1, "on_track": 2}
@@ -519,6 +521,7 @@ def take_action():
         issue_flt=issue_flt,
         status_flt=status_flt,
         all_regions=all_regions,
+        focus_practice_id=practice_id,
         today=DATA["today"],
     )
 
@@ -709,7 +712,7 @@ def forecast_view():
     else:
         level      = "national"
         nf         = forecast_national(DATA["areas"], horizon)
-        title      = "All Areas — National View"
+        title      = "All Areas - National View"
         model_used = ml_model_deployed()
 
     # ── Build chart data ───────────────────────────────────────────────────

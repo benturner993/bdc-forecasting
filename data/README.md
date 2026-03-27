@@ -37,7 +37,7 @@ Replace them with your real data exports when ready.
 | `monthly_capacity` | int | Total appointment slots available per month |
 | `target_utilization` | float (0–1) | Target fill rate for capacity |
 | `booking_profile` | string | `early` / `mixed` / `late` — how far in advance patients book |
-| `connected_care` | bool | Whether the practice operates under Connected Care |
+| `network_program` | bool | Whether the practice is in the network programme group |
 | `aop_monthly_bookings` | int | AOP monthly bookings target |
 | `aop_monthly_revenue` | float | AOP monthly revenue target (£) |
 | `aop_annual_revenue` | float | AOP annual revenue target (£) |

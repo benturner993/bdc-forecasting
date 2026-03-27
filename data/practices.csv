@@ -1,4 +1,4 @@
-id,name,location,area_id,area_name,region,nhs_mix,private_mix,avg_nhs_value,avg_private_value,blended_value,monthly_capacity,target_utilization,booking_profile,connected_care,aop_monthly_bookings,aop_monthly_revenue,aop_annual_revenue
+id,name,location,area_id,area_name,region,nhs_mix,private_mix,avg_nhs_value,avg_private_value,blended_value,monthly_capacity,target_utilization,booking_profile,network_program,aop_monthly_bookings,aop_monthly_revenue,aop_annual_revenue
 P001,Bupa Dental Care Aldgate,Aldgate,A01,London East,London,0.72,0.28,41.71,203.27,86.99,702,0.865,early,True,606,52715,632580
 P002,Bupa Dental Care Bethnal Green,Bethnal Green,A01,London East,London,0.596,0.404,44.83,216.0,113.9,870,0.829,early,True,721,82119,985428
 P003,Bupa Dental Care Bow,Bow,A01,London East,London,0.752,0.248,33.99,184.63,71.3,770,0.84,late,True,647,46134,553608

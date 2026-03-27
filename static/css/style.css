@@ -147,6 +147,97 @@
   color: #12213a;
 }
 
+.practice-header-visual {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.practice-head-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.practice-head-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 260px;
+}
+
+.practice-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.practice-head-main {
+  min-width: 0;
+}
+
+.practice-loc-line {
+  color: #5d6778;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.practice-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 58%;
+  margin-left: auto;
+}
+
+.practice-issues-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.practice-action-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #db3907;
+  color: #fff;
+  border: 1px solid #db3907;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(219, 57, 7, 0.28);
+  transition: all 0.16s ease;
+}
+
+.practice-action-banner:hover {
+  color: #fff;
+  background: #c53206;
+  border-color: #c53206;
+}
+
+@media (max-width: 992px) {
+  .practice-head-right {
+    max-width: 100%;
+    width: 100%;
+    align-items: flex-start;
+    margin-left: 0;
+  }
+
+  .practice-issues-wrap {
+    justify-content: flex-start;
+  }
+}
+
 /* ── Issue / Explainability Cards ────────────────────────────────────────── */
 
 .issue-card {

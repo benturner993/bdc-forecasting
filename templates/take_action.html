@@ -6,46 +6,10 @@
 
 <h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Take Action</h2>
 <p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
-  Practice-level action recommendations driven by the BPC &ldquo;Translating to Action&rdquo; framework.
-  Each off-track or at-risk practice is diagnosed through a three-step decision tree:
-  <strong>Is the practice on track?</strong> → <strong>What is the issue?</strong>
-  (Demand, Supply, or Mix) → <strong>What is the root cause?</strong> → specific suggested actions with
-  owners and priority. Use the filters below to focus on a region, issue type, or practices that need action.
+  Practice-level action recommendations for off-track and at-risk practices.
+  Use the filters below to focus on a region, issue type, or practices that need action.
   Click any practice row to expand its full diagnosis and recommended interventions.
 </p>
-
-<!-- ── Framework summary strip ───────────────────────────────────────────── -->
-<div class="framework-strip mb-4">
-  <div class="fw-step fw-step-q">
-    <div class="fw-step-icon"><i class="fas fa-question-circle"></i></div>
-    <div class="fw-step-text">Is the practice<br><strong>on track?</strong></div>
-  </div>
-  <div class="fw-arrow"><i class="fas fa-arrow-right"></i><span>No</span></div>
-  <div class="fw-step fw-step-issue">
-    <div class="fw-step-icon"><i class="fas fa-search"></i></div>
-    <div class="fw-step-text">What is<br><strong>the issue?</strong></div>
-    <div class="fw-step-badges mt-1">
-      <span class="badge fw-badge-demand">Demand</span>
-      <span class="badge fw-badge-supply">Supply</span>
-      <span class="badge fw-badge-mix">Mix</span>
-    </div>
-  </div>
-  <div class="fw-arrow"><i class="fas fa-arrow-right"></i></div>
-  <div class="fw-step fw-step-cause">
-    <div class="fw-step-icon"><i class="fas fa-microscope"></i></div>
-    <div class="fw-step-text">What is<br><strong>the cause?</strong></div>
-  </div>
-  <div class="fw-arrow"><i class="fas fa-arrow-right"></i></div>
-  <div class="fw-step fw-step-action">
-    <div class="fw-step-icon"><i class="fas fa-bolt"></i></div>
-    <div class="fw-step-text">Suggested<br><strong>actions</strong></div>
-  </div>
-  <div class="fw-arrow"><i class="fas fa-arrow-right"></i><span>Yes</span></div>
-  <div class="fw-step fw-step-ok">
-    <div class="fw-step-icon"><i class="fas fa-check-circle"></i></div>
-    <div class="fw-step-text">Continuous<br><strong>monitoring</strong></div>
-  </div>
-</div>
 
 <!-- ── KPI summary row ───────────────────────────────────────────────────── -->
 <div class="row g-3 mb-4">
@@ -94,6 +58,18 @@
 </div>
 
 <!-- ── Filter bar ────────────────────────────────────────────────────────── -->
+{% if focus_practice_id %}
+<div class="card mb-3 border-0 shadow-sm" style="background:#f4f7fc; border:1px solid #dbe4f0!important;">
+  <div class="card-body py-2 d-flex flex-wrap align-items-center gap-2">
+    <span class="fw-medium" style="color:#0d1846;">
+      <i class="fas fa-crosshairs me-1"></i>Focused view for one practice
+    </span>
+    <a href="{{ url_for('take_action') }}" class="btn btn-sm btn-outline-primary ms-auto">
+      <i class="fas fa-list me-1"></i>Back to all practices
+    </a>
+  </div>
+</div>
+{% else %}
 <div class="card mb-3">
   <div class="card-body py-2 d-flex flex-wrap gap-3 align-items-center">
 
@@ -143,6 +119,7 @@
     </span>
   </div>
 </div>
+{% endif %}
 
 <!-- ── Practice action list ───────────────────────────────────────────────── -->
 {% if not practices %}
@@ -154,12 +131,12 @@
 <div class="accordion" id="actionAccordion">
   {% for p in practices %}
   {% set ap = p.action_plan %}
-  {% set rid = 'prac-' ~ loop.index %}
+  {% set rid = p.id %}
   <div class="action-row {{ ap.status }}" id="row-{{ rid }}">
 
     <!-- Summary bar (always visible) -->
     <div class="action-row-header" data-bs-toggle="collapse"
-         data-bs-target="#collapse-{{ rid }}" aria-expanded="false"
+         data-bs-target="#collapse-{{ rid }}" aria-expanded="{{ 'true' if focus_practice_id == p.id else 'false' }}"
          aria-controls="collapse-{{ rid }}">
 
       <!-- Status dot -->
@@ -220,7 +197,7 @@
     </div>
 
     <!-- Expanded content -->
-    <div class="collapse" id="collapse-{{ rid }}">
+    <div class="collapse{{ ' show' if focus_practice_id == p.id else '' }}" id="collapse-{{ rid }}">
       <div class="action-detail">
         <div class="row g-3">
 
@@ -286,14 +263,6 @@
                   <span>Booking Profile</span>
                   <strong>{{ p.booking_profile | title }}</strong>
                 </div>
-                <div class="diag-metric-row">
-                  <span>Connected Care</span>
-                  {% if p.connected_care %}
-                    <strong class="text-success"><i class="fas fa-check me-1"></i>Yes</strong>
-                  {% else %}
-                    <strong class="text-muted">No</strong>
-                  {% endif %}
-                </div>
               </div>
             </div>
           </div>
@@ -357,33 +326,6 @@
 
 {% block scripts %}
 <style>
-/* ── Framework strip ───────────────────────────────────────────────────────── */
-.framework-strip {
-  display: flex; align-items: center; gap: 0;
-  background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px;
-  padding: 14px 20px; flex-wrap: wrap; gap: 6px;
-}
-.fw-step {
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center; padding: 8px 14px; border-radius: 8px;
-  min-width: 90px; font-size: .78rem;
-}
-.fw-step-icon { font-size: 1.2rem; margin-bottom: 4px; }
-.fw-step-q      { background: #343a40; color: #fff; }
-.fw-step-issue  { background: #0d6efd; color: #fff; }
-.fw-step-cause  { background: #6c757d; color: #fff; }
-.fw-step-action { background: #198754; color: #fff; }
-.fw-step-ok     { background: #20c997; color: #fff; }
-.fw-badge-demand { background: #ffc107; color: #000; }
-.fw-badge-supply { background: #dc3545; color: #fff; }
-.fw-badge-mix    { background: #0dcaf0; color: #000; }
-.fw-step-badges  { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }
-.fw-arrow {
-  font-size: .9rem; color: #6c757d; padding: 0 6px;
-  display: flex; flex-direction: column; align-items: center;
-}
-.fw-arrow span { font-size: .65rem; color: #adb5bd; }
-
 /* ── KPI cards ─────────────────────────────────────────────────────────────── */
 .action-kpi {
   border-radius: 10px; padding: 14px 12px; text-align: center;

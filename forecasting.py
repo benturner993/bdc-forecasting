@@ -40,7 +40,7 @@ FEATURE_COLS = [
     "booking_rate_vs_aop",
     "rev_per_booking_lag1",
     "booking_profile_encoded",
-    "connected_care_encoded",
+    "network_program_encoded",
 ]
 
 BOOKING_PROFILE_ENC = {"early": 0, "mixed": 1, "late": 2}
@@ -71,7 +71,7 @@ def build_inference_features(
     bk_rate_vs_aop = (b_lag1 / aop_b) if aop_b > 0 else 1.0
 
     profile_enc = BOOKING_PROFILE_ENC.get(practice.get("booking_profile", "mixed"), 1)
-    cc_enc      = int(bool(practice.get("connected_care", False)))
+    np_enc      = int(bool(practice.get("network_program", False)))
 
     return [
         practice["nhs_mix"],
@@ -89,7 +89,7 @@ def build_inference_features(
         bk_rate_vs_aop,
         rpb_lag1,
         profile_enc,
-        cc_enc,
+        np_enc,
     ]
 
 

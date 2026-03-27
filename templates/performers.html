@@ -8,7 +8,7 @@
 <p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
   Ranked individual practice performance across the network of 380 practices.
   Use this page to identify which practices need immediate support and which are delivering
-  best practice to share across areas. Traffic lights are based on the national percentile rank —
+  best practice to share across areas. Traffic lights are based on the national percentile rank -
   Green = top 25%, Red = bottom 25%. Use the filters below to adjust the ranking metric,
   number of practices shown, and region.
 </p>
@@ -79,7 +79,7 @@
   <div class="col-xl-6">
     <div class="card border-success h-100">
       <div class="card-header bg-success text-white d-flex justify-content-between">
-        <span><i class="fas fa-arrow-up me-1"></i> Top {{ n }} — Best Practice
+        <span><i class="fas fa-arrow-up me-1"></i> Top {{ n }} - Best Practice
           {% if region != 'all' %}<span class="badge bg-success-subtle text-success ms-1 border border-success-subtle">{{ region }}</span>{% endif %}
         </span>
         <span class="badge bg-white text-success">{{ metric_label }}</span>
@@ -129,8 +129,8 @@
       </div>
       <div class="card-footer bg-success-subtle small text-success">
         <i class="fas fa-star me-1"></i>
-        These practices are exceeding AOP targets. Consider sharing their approach — booking profile,
-        private mix strategy, and scheduling practices — across the network.
+        These practices are exceeding AOP targets. Consider sharing their approach - booking profile,
+        private mix strategy, and scheduling practices - across the network.
       </div>
     </div>
   </div>
@@ -139,7 +139,7 @@
   <div class="col-xl-6">
     <div class="card border-danger h-100">
       <div class="card-header bg-danger text-white d-flex justify-content-between">
-        <span><i class="fas fa-arrow-down me-1"></i> Bottom {{ n }} — Needs Support
+        <span><i class="fas fa-arrow-down me-1"></i> Bottom {{ n }} - Needs Support
           {% if region != 'all' %}<span class="badge bg-danger-subtle text-danger ms-1 border border-danger-subtle">{{ region }}</span>{% endif %}
         </span>
         <span class="badge bg-white text-danger">{{ metric_label }}</span>
@@ -211,7 +211,7 @@
 <!-- Revenue per booking insight -->
 <div class="card mt-4">
   <div class="card-header">
-    <i class="fas fa-lightbulb me-1"></i> Revenue per Appointment — Top {{ n }} vs Bottom {{ n }}
+    <i class="fas fa-lightbulb me-1"></i> Revenue per Appointment - Top {{ n }} vs Bottom {{ n }}
     {% if region != 'all' %}<span class="badge bg-secondary ms-1">{{ region }}</span>{% endif %}
     <span class="text-muted small ms-2">A low figure often indicates NHS-heavy mix suppressing revenue</span>
   </div>
@@ -233,13 +233,13 @@ const ctx = document.getElementById('revPerApptChart').getContext('2d');
 new Chart(ctx, {
   type: 'bar',
   data: {
-    labels: [...bottomNames.map(n => '↓ ' + n), ...topNames.map(n => '↑ ' + n)],
+    labels: [...topNames.map(n => '↑ ' + n), ...bottomNames.map(n => '↓ ' + n)],
     datasets: [{
       label: 'Revenue per Appointment (£)',
-      data: [...bottomRevPA, ...topRevPA],
+      data: [...topRevPA, ...bottomRevPA],
       backgroundColor: [
-        ...bottomRevPA.map(() => 'rgba(220,53,69,0.7)'),
         ...topRevPA.map(() => 'rgba(25,135,84,0.7)'),
+        ...bottomRevPA.map(() => 'rgba(220,53,69,0.7)'),
       ],
       borderRadius: 3,
     }]

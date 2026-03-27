@@ -31,7 +31,7 @@ monthly practice revenue. Key inputs:
 | `monthly_capacity` | Total available appointment slots |
 | `target_utilization` | Capacity fill target |
 | `booking_profile_encoded` | Early / mixed / late booking tendency |
-| `connected_care_encoded` | Connected Care area flag |
+| `network_program_encoded` | Network programme area flag |
 
 **Target**: `monthly_revenue` (£)
 

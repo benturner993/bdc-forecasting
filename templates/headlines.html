@@ -8,7 +8,7 @@
 <h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Headline Performance Overview</h2>
 <p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
   This page summarises booking and revenue delivery across the entire network of 380 practices.
-  Day {{ current_day }} of 31 has elapsed this month — use the cards and charts below to assess
+  Day {{ current_day }} of 31 has elapsed this month - use the cards and charts below to assess
   current performance against AOP targets and understand the distribution of practice outcomes.
 </p>
 
@@ -76,7 +76,7 @@
       <div class="kpi-hover-desc">
         Cumulative revenue delivered since the start of the financial year (April 2025)
         compared with the cumulative AOP target to date. This is the primary measure of
-        full-year performance — a delivery rate below 97% requires investigation and action.
+        full-year performance - a delivery rate below 97% requires investigation and action.
       </div>
     </div>
   </div>
@@ -88,7 +88,7 @@
         <i class="fas fa-hospital" style="color:#7b1fa2"></i>
       </div>
       <div class="home-kpi-label">Practice Status</div>
-      <div class="home-kpi-sub">380 practices — {{ today }}</div>
+      <div class="home-kpi-sub">380 practices - {{ today }}</div>
       <div class="d-flex align-items-center gap-3 mt-2">
         <div style="position:relative; width:80px; height:80px; flex-shrink:0;">
           <canvas id="statusDonut"></canvas>
@@ -119,45 +119,42 @@
 
 </div>
 
-<!-- Charts row (traffic light chart removed — same data as Practice Performance Split KPI above) -->
+<!-- Charts row -->
 <div class="row g-3 mb-4">
-  <div class="col-lg-7">
+  <div class="col-lg-6">
     <div class="card">
       <div class="card-header">
-        <i class="fas fa-chart-bar me-1"></i> YTD Revenue Delivery by Area
-        <span class="text-muted small ms-2">Dashed = 100% AOP</span>
+        <i class="fas fa-chart-bar me-1"></i> YTD Revenue Delivery by Area (%)
+        <span class="text-muted small ms-2">Red / Amber / Green by area status</span>
       </div>
       <div class="card-body p-2">
         <div style="position:relative; height:320px; overflow:hidden;">
-          <canvas id="areaBarChart"></canvas>
+          <canvas id="areaPctBarChart"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-lg-5">
+  <div class="col-lg-6">
     <div class="card">
       <div class="card-header">
-        <i class="fas fa-chart-column me-1"></i> Booking Rate Distribution
-        <span class="text-muted small ms-2">All 380 practices</span>
+        <i class="fas fa-pound-sign me-1"></i> YTD Revenue by Area (Actual £)
+        <span class="text-muted small ms-2">Red / Amber / Green by area status</span>
       </div>
       <div class="card-body p-2">
-        <div style="position:relative; height:240px; overflow:hidden;">
-          <canvas id="brDistChart"></canvas>
-        </div>
-        <div class="mt-2 small text-muted">
-          Booking rate = actual bookings ÷ expected bookings at day {{ current_day }} of month,
-          based on each practice's historical booking curve.
+        <div style="position:relative; height:320px; overflow:hidden;">
+          <canvas id="areaAmountBarChart"></canvas>
         </div>
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- Revenue gap analysis by area -->
 <div class="card mb-4">
   <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-    <span><i class="fas fa-table me-1"></i> Area Revenue Gap — Ranked by YTD Delivery</span>
+    <span><i class="fas fa-table me-1"></i> Area Revenue Gap - Ranked by YTD Delivery</span>
     <div class="d-flex align-items-center gap-2">
       <!-- Row count filter -->
       <div class="btn-group btn-group-sm" id="areaRowFilter" role="group" aria-label="Show rows">
@@ -302,14 +299,15 @@ function setAreaRows(n) {
 
 const areaLabels    = {{ area_labels | safe }};
 const areaYtd       = {{ area_ytd | safe }};
+const areaYtdAmount = {{ area_ytd_amount | safe }};
 const areaTlColors  = {{ area_tl_colors | safe }};
-const areaCtx = document.getElementById('areaBarChart').getContext('2d');
-new Chart(areaCtx, {
+const areaPctCtx = document.getElementById('areaPctBarChart').getContext('2d');
+new Chart(areaPctCtx, {
   type: 'bar',
   data: {
     labels: areaLabels,
     datasets: [{ label: 'YTD Revenue Delivery (%)', data: areaYtd,
-      backgroundColor: '#0d1846', borderRadius: 3 }]
+      backgroundColor: areaTlColors, borderRadius: 3 }]
   },
   options: {
     indexAxis: 'y',
@@ -325,31 +323,32 @@ new Chart(areaCtx, {
   }
 });
 
-const brLabels  = {{ br_labels | safe }};
-const brBuckets = {{ br_buckets | safe }};
-const brCtx = document.getElementById('brDistChart').getContext('2d');
-new Chart(brCtx, {
+const areaAmtCtx = document.getElementById('areaAmountBarChart').getContext('2d');
+new Chart(areaAmtCtx, {
   type: 'bar',
   data: {
-    labels: brLabels,
-    datasets: [{
-      label: 'Practices',
-      data: brBuckets,
-      backgroundColor: ['#0079c8','#d02670','#db3907','#1b883c','#007d79'],
-      borderRadius: 4,
-    }]
+    labels: areaLabels,
+    datasets: [{ label: 'YTD Revenue (£)', data: areaYtdAmount,
+      backgroundColor: areaTlColors, borderRadius: 3 }]
   },
   options: {
+    indexAxis: 'y',
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} practices` }}
+      tooltip: { callbacks: { label: ctx => ` £${ctx.raw.toLocaleString()}` }}
     },
     scales: {
-      y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 } } },
-      x: { grid: { display: false } }
+      x: {
+        ticks: {
+          callback: v => '£' + (v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : (v / 1e3).toFixed(0) + 'k')
+        },
+        grid: { color: 'rgba(0,0,0,0.04)' }
+      },
+      y: { grid: { display: false }, ticks: { font: { size: 10 } } }
     }
   }
 });
+
 </script>
 {% endblock %}

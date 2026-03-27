@@ -15,7 +15,7 @@
 <h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Area Performance Summary</h2>
 <p style="color:#0d1846; font-size:0.92rem; margin-bottom:20px;">
   Performance overview for all 25 operational areas across the UK, grouped by region.
-  Each row represents one area — click the <strong>Detail →</strong> button on the right of any row
+  Each row represents one area - click the <strong>Detail →</strong> button on the right of any row
   to drill into that area's individual practices, booking curves, and revenue breakdown.
   Columns are sortable using the controls below. For a month-by-month forward look at booking
   rates and practice RAG splits through to June, visit the
@@ -61,7 +61,6 @@
             <th class="text-end">Mar Rev Gap</th>
             <th class="text-end">YTD Revenue</th>
             <th class="text-end">YTD Delivery</th>
-            <th class="text-center">CC</th>
             <th></th>
           </tr>
         </thead>
@@ -104,11 +103,6 @@
                 </div>
                 <span class="small fw-medium">{{ (area.ytd_delivery*100)|round(1) }}%</span>
               </div>
-            </td>
-            <td class="text-center">
-              {% if area.connected_care %}
-              <span class="badge bg-info-subtle text-info border border-info-subtle" title="Connected Care">CC</span>
-              {% endif %}
             </td>
             <td>
               <a href="{{ url_for('area_detail', area_id=area.id) }}" class="btn btn-xs btn-outline-primary">Detail →</a>

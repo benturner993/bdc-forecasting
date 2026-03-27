@@ -35,7 +35,7 @@ practice_fields = [
     "id", "name", "location", "area_id", "area_name", "region",
     "nhs_mix", "private_mix", "avg_nhs_value", "avg_private_value",
     "blended_value", "monthly_capacity", "target_utilization",
-    "booking_profile", "connected_care",
+    "booking_profile", "network_program",
     "aop_monthly_bookings", "aop_monthly_revenue", "aop_annual_revenue",
 ]
 write_csv("practices.csv", DATA["practices"], practice_fields)

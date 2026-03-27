@@ -46,6 +46,8 @@ bpc-forecasting/
 ├── data_generator.py           # Synthetic data generation (replace with real loader)
 ├── forecasting.py              # Forecast calculations and confidence intervals
 ├── requirements.txt
+├── Dockerfile                  # Container image definition (Gunicorn + Flask)
+├── .dockerignore               # Docker build context exclusions
 │
 ├── data/                       # Data files (CSV format)
 │   ├── README.md               # Column reference and migration guide
@@ -101,6 +103,15 @@ Open [http://localhost:5000](http://localhost:5000)
 ```bash
 python data/generate_data.py
 ```
+
+---
+
+## Deployment
+
+- **Azure Container Apps (new subscription, step-by-step):**
+  see `AZURE_CONTAINER_APPS_README.md`.
+- This repo includes a production-ready `Dockerfile` and `.dockerignore`, so you can
+  build and deploy directly without creating container files first.
 
 ---
 

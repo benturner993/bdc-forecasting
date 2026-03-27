@@ -7,17 +7,17 @@
 <h2 style="color:#0d1846; font-weight:700; margin-bottom:6px;">Revenue &amp; Booking Forecast</h2>
 <p style="color:#0d1846; font-size:0.92rem; margin-bottom:12px;">
   {% if level == 'practice' %}
-    <strong>Practice view — {{ practice.name }}.</strong>
+    <strong>Practice view - {{ practice.name }}.</strong>
     Monthly revenue and booking volumes for the next <strong>{{ horizon }} months</strong>, using this
     practice's historical booking curve, NHS/Private mix
     ({{ (practice.nhs_mix * 100)|round(0)|int }}% NHS · {{ (practice.private_mix * 100)|round(0)|int }}% private),
     and expected price uplifts (NHS +2.5%/yr · private +5.0%/yr).
   {% elif level == 'area' %}
-    <strong>Area view — {{ area.name }}.</strong>
+    <strong>Area view - {{ area.name }}.</strong>
     Aggregated projections across all {{ area.practices|length }} practices in this area for the next
     <strong>{{ horizon }} months</strong>.
   {% else %}
-    <strong>National view — all 25 areas.</strong>
+    <strong>National view - all 25 areas.</strong>
     Aggregated projections across all 380 practices for the next <strong>{{ horizon }} months</strong>
     (FY 2026/27), using historical booking curves, seasonal patterns, and expected price uplifts
     (NHS +2.5%/yr · private +5.0%/yr).
@@ -93,8 +93,8 @@
 
     <p class="mb-2"><strong>What this page is for.</strong> You get a <em>forward</em> view of revenue and booking volumes
       month by month for the next <strong>{{ horizon }} months</strong> (change the horizon with the buttons below to
-      refocus KPIs, charts, and the table). Everything is benchmarked against <strong>AOP</strong> — the annual
-      operating plan — so you can see whether the trajectory is ahead or behind target.</p>
+      refocus KPIs, charts, and the table). Everything is benchmarked against <strong>AOP</strong> - the annual
+      operating plan - so you can see whether the trajectory is ahead or behind target.</p>
 
     <p class="mb-2"><strong>National, area, and practice.</strong>
       {% if level == 'national' %}
@@ -102,7 +102,7 @@
       {% elif level == 'area' %}
         <strong>Area</strong> adds only the practices in {{ area.name }}.
       {% else %}
-        <strong>Practice</strong> is a single site — {{ practice.name }}.
+        <strong>Practice</strong> is a single site - {{ practice.name }}.
       {% endif %}
       Under the hood, area and national numbers are simply the sum of the same per-practice forecasts you would see by
       drilling down, so the story stays consistent at every level.</p>
@@ -130,7 +130,7 @@
 
     <p class="mb-2"><strong>Charts.</strong> The main line chart compares <strong>forecast revenue</strong> (blue) to
       <strong>AOP revenue</strong> (green dashed). Markers are green or red depending whether that month is above or below
-      AOP. The bar chart shows <strong>forecast booking counts</strong> — implied from revenue using blended fee rates and
+      AOP. The bar chart shows <strong>forecast booking counts</strong> - implied from revenue using blended fee rates and
       the same pricing uplift logic. The <strong>Forecast assumptions</strong> panel on the right restates the key inputs.</p>
 
     <p class="mb-2"><strong>Monthly forecast detail table.</strong> For each month: expected bookings, forecast revenue,
@@ -181,7 +181,7 @@
         <label class="form-label mb-0 fw-medium text-nowrap">Area:</label>
         <select id="areaSelect" name="area" class="form-select form-select-sm"
                 style="min-width:200px;" onchange="onAreaChange()">
-          <option value="all">— select area —</option>
+          <option value="all">- select area -</option>
           {% for a in areas %}
           <option value="{{ a.id }}" {{ 'selected' if area_id == a.id }}>{{ a.name }}</option>
           {% endfor %}
@@ -194,7 +194,7 @@
         <label class="form-label mb-0 fw-medium text-nowrap">Practice:</label>
         <select id="practiceSelect" name="practice" class="form-select form-select-sm"
                 style="min-width:220px;" onchange="document.getElementById('forecastForm').submit()">
-          <option value="">— select practice —</option>
+          <option value="">- select practice -</option>
           {% for p in [] %}{# populated by JS from practice_list #}{% endfor %}
         </select>
       </div>
@@ -356,7 +356,7 @@
 <!-- ── Main forecast chart ───────────────────────────────────────────────── -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <span><i class="fas fa-chart-area me-1"></i> Revenue Forecast vs AOP Target — {{ title }}</span>
+    <span><i class="fas fa-chart-area me-1"></i> Revenue Forecast vs AOP Target - {{ title }}</span>
     <span class="text-muted small">Shaded band = 80% confidence interval</span>
   </div>
   <div class="card-body p-2">
@@ -489,7 +489,7 @@ const currentPracticeId = "{{ practice_id }}";
 function populatePracticeDropdown(areaId) {
   const sel = document.getElementById('practiceSelect');
   if (!sel) return;
-  sel.innerHTML = '<option value="">— select practice —</option>';
+  sel.innerHTML = '<option value="">- select practice -</option>';
   ALL_PRACTICES
     .filter(p => !areaId || areaId === 'all' || p.area_id === areaId)
     .sort((a, b) => a.name.localeCompare(b.name))
